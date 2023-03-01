@@ -1,0 +1,45 @@
+.tool {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 80%;
+	height: 40px;
+	border-radius: 2px;
+	background-color: #435164;
+	color: #9fadb5;
+	transition: all 0.3s linear;
+}
+.active {
+	background-color: #2a507e;
+	color: #afcfe4;
+	cursor: pointer;
+}
+.tool.pressed {
+	border-radius: 6px;
+	background-color: #c28547;
+}
+.tool.active:hover {
+	border-radius: 6px;
+	background-color: #c28547;
+}
+.input {
+	opacity: 0;
+	position: absolute;
+	z-index: -1;
+}
+.toolContainer {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+@media only screen and (max-width: 758px) {
+	.tool {
+		width: 40px;
+		height: 100%;
+	}
+	.toolContainer {
+		display: flex;
+		justify-content: center;
+		height: 40px;
+	}
+}
