@@ -28,15 +28,15 @@ export default function deepFirstSearch(
 				setViewVisited([...visited]);
 
 				for (let connection of curr.connections) {
-					if (!visited[connection[0] - 1]) {
-						stack.push(nodes[connection[0] - 1]);
+					if (!visited[connection[0]! - 1]) {
+						stack.push(nodes[connection[0]! - 1]);
 						break;
 					}
 				}
 			} else {
 				// if all connected edges are visited -> dead end
 				if (
-					curr.connections.every((connection) => visited[connection[0] - 1])
+					curr.connections.every((connection) => visited[connection[0]! - 1])
 				) {
 					deadEnds[curr.index - 1] = true;
 					setViewDead([...deadEnds]);
@@ -44,8 +44,8 @@ export default function deepFirstSearch(
 				} else {
 					// if there are unvisited neibours -> push to stack first of them
 					for (let connection of curr.connections) {
-						if (!visited[connection[0] - 1]) {
-							stack.push(nodes[connection[0] - 1]);
+						if (!visited[connection[0]! - 1]) {
+							stack.push(nodes[connection[0]! - 1]);
 							break;
 						}
 					}
