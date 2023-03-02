@@ -98,7 +98,7 @@ function Edge({
 				(document.body.style.cursor = selectState ? 'pointer' : 'default')
 			}
 			onMouseLeave={() => (document.body.style.cursor = 'default')}
-			onClick={() => onClick()}
+			onPointerClick={() => onClick()}
 		>
 			{type === 'undirect' && (
 				<Line

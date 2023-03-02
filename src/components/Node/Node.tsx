@@ -191,7 +191,7 @@ function Node({
 			onMouseEnter={() => (document.body.style.cursor = 'grab')}
 			onDragEnd={() => (document.body.style.cursor = 'grab')}
 			onMouseLeave={() => (document.body.style.cursor = 'default')}
-			onClick={() => onClick()}
+			onPointerClick={() => onClick()}
 		>
 			<Circle radius={radius} fill={currFill} />
 			<Text
