@@ -1,5 +1,5 @@
 import { saveAs } from 'file-saver';
-import { useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -13,13 +13,30 @@ import {
 	TrashIcon,
 } from '../../assets/icons';
 import { generateEdges } from '../../helpers';
-import { ToolbarProps } from '../../types';
+import { IEdge, INode } from '../../types';
 import Choice from '../Choice';
 import ColorSelection from '../ColorSelection';
 import UploadBtn from '../UploadBtn';
 import SaveBtn from './SaveBtn';
 import styles from './Toolbar.module.css';
 import ToolBtn from './ToolBtn';
+
+interface ToolbarProps {
+	nodes: INode[];
+	nodesSelected: INode[];
+	setNodesSelected: Dispatch<SetStateAction<INode[]>>;
+	setNodes: Dispatch<SetStateAction<INode[]>>;
+	setEdges: Dispatch<SetStateAction<IEdge[]>>;
+	mode: string;
+	setMode: Dispatch<SetStateAction<string>>;
+	nodesColor: string;
+	setNodesColor: Dispatch<SetStateAction<string>>;
+	edgesColor: string;
+	setEdgesColor: Dispatch<SetStateAction<string>>;
+	type: string;
+	setType: Dispatch<SetStateAction<string>>;
+	setAlgorithm: Dispatch<SetStateAction<string>>;
+}
 
 function Toolbar({
 	nodes,

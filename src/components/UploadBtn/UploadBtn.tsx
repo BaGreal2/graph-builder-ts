@@ -1,8 +1,20 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { UploadIcon } from '../../assets/icons';
 import { generateEdges, getRandomInt } from '../../helpers';
-import { INode, UploadBtnProps } from '../../types';
+import { IEdge, INode } from '../../types';
 import styles from './UploadBtn.module.css';
+
+interface UploadBtnProps {
+	tooltipText: string;
+	setNodes: Dispatch<SetStateAction<INode[]>>;
+	setEdges: Dispatch<SetStateAction<IEdge[]>>;
+	setType: Dispatch<SetStateAction<string>>;
+	setFirstClick: Dispatch<SetStateAction<boolean>>;
+	active: boolean;
+	setNodesColor: Dispatch<SetStateAction<string>>;
+	setEdgesColor: Dispatch<SetStateAction<string>>;
+	pressed?: boolean;
+}
 
 function UploadBtn({
 	tooltipText,

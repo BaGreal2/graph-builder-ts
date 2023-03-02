@@ -1,6 +1,12 @@
+import { ReactNode } from 'react';
 import { SaveIcon } from '../../assets/icons';
-import { SaveBtnProps } from '../../types';
 import ToolBtn from './ToolBtn';
+
+interface SaveBtnProps {
+	tooltipText: string;
+	onShowChoice: () => void;
+	children: ReactNode;
+}
 
 function SaveBtn({ tooltipText, onShowChoice, children }: SaveBtnProps) {
 	return (

@@ -1,5 +1,12 @@
-import { ColorSelectionProps } from '../../types';
+import { Dispatch, SetStateAction } from 'react';
 import styles from './ColorSelection.module.css';
+
+interface ColorSelectionProps {
+	nodesColor: string;
+	edgesColor: string;
+	setNodesColor: Dispatch<SetStateAction<string>>;
+	setEdgesColor: Dispatch<SetStateAction<string>>;
+}
 
 function ColorSelection({
 	nodesColor,

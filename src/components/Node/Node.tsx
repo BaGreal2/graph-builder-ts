@@ -1,8 +1,25 @@
 import Konva from 'konva';
+import { Dispatch, SetStateAction } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { deepFirstSearch } from '../../algorithms';
 import { countColor, generateEdges } from '../../helpers';
-import { NodeProps } from '../../types';
+import { IEdge, INode } from '../../types';
+
+interface NodeProps {
+	node: INode;
+	nodesSelected: INode[];
+	setNodesSelected: Dispatch<SetStateAction<INode[]>>;
+	nodes: INode[];
+	setNodes: Dispatch<SetStateAction<INode[]>>;
+	setEdges: Dispatch<SetStateAction<IEdge[]>>;
+	mode: string;
+	nodesColor: string;
+	viewVisited: boolean[];
+	viewDead: boolean[];
+	setViewVisited: Dispatch<SetStateAction<boolean[]>>;
+	setViewDead: Dispatch<SetStateAction<boolean[]>>;
+	algorithm: string;
+}
 
 function Node({
 	node,

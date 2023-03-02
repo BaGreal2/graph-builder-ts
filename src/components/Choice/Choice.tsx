@@ -1,5 +1,9 @@
-import { ChoiceProps } from '../../types';
 import styles from './Choice.module.css';
+
+interface ChoiceProps {
+	choices: { text: string; tooltip?: string; func: () => void }[];
+	upper?: boolean;
+}
 
 function Choice({ choices, upper = false }: ChoiceProps) {
 	return (

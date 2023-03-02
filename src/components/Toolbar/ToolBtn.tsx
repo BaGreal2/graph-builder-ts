@@ -1,5 +1,13 @@
-import { ToolBtnProps } from '../../types';
+import { ReactNode } from 'react';
 import styles from './ToolBtn.module.css';
+
+interface ToolBtnProps {
+	onClick: () => void;
+	tooltipText: string;
+	active: boolean;
+	children: ReactNode;
+	pressed?: boolean;
+}
 
 function ToolBtn({
 	onClick,
