@@ -1,18 +1,18 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { UploadIcon } from '../../assets/icons';
 import { generateEdges, getRandomInt } from '../../helpers';
-import { IEdge, INode } from '../../types';
+import { IColor, IEdge, INode, IType } from '../../types';
 import styles from './UploadBtn.module.css';
 
 interface UploadBtnProps {
 	tooltipText: string;
 	setNodes: Dispatch<SetStateAction<INode[]>>;
 	setEdges: Dispatch<SetStateAction<IEdge[]>>;
-	setType: Dispatch<SetStateAction<string>>;
+	setType: Dispatch<SetStateAction<IType>>;
 	setFirstClick: Dispatch<SetStateAction<boolean>>;
 	active: boolean;
-	setNodesColor: Dispatch<SetStateAction<string>>;
-	setEdgesColor: Dispatch<SetStateAction<string>>;
+	setNodesColor: Dispatch<SetStateAction<IColor>>;
+	setEdgesColor: Dispatch<SetStateAction<IColor>>;
 	pressed?: boolean;
 }
 
@@ -52,14 +52,8 @@ function UploadBtn({
 				connections: node,
 			};
 		});
-		// const type = res.type;
 		setFirstClick(true);
-		// if (type === '') {
-		// } else {
-		// 	setFirstClick(false);
-		// }
 		setNodes([...nodesNew]);
-		// setType(type);
 		setNodesColor('#2a507e');
 		setEdgesColor('#ffffff');
 		generateEdges(nodesNew, setEdges);

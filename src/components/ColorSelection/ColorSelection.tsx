@@ -1,11 +1,12 @@
 import { Dispatch, SetStateAction } from 'react';
+import { IColor } from '../../types';
 import styles from './ColorSelection.module.css';
 
 interface ColorSelectionProps {
-	nodesColor: string;
-	edgesColor: string;
-	setNodesColor: Dispatch<SetStateAction<string>>;
-	setEdgesColor: Dispatch<SetStateAction<string>>;
+	nodesColor: IColor;
+	edgesColor: IColor;
+	setNodesColor: Dispatch<SetStateAction<IColor>>;
+	setEdgesColor: Dispatch<SetStateAction<IColor>>;
 }
 
 function ColorSelection({
@@ -19,13 +20,13 @@ function ColorSelection({
 			<input
 				className={styles.colorNodesInput}
 				type="color"
-				onChange={(e) => setNodesColor(e.target.value)}
+				onChange={(e) => setNodesColor(e.target.value as IColor)}
 				value={nodesColor}
 			/>
 			<input
 				className={styles.colorEdgesInput}
 				type="color"
-				onChange={(e) => setEdgesColor(e.target.value)}
+				onChange={(e) => setEdgesColor(e.target.value as IColor)}
 				value={edgesColor}
 			/>
 			<button

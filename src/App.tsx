@@ -5,7 +5,7 @@ import 'react-tooltip/dist/react-tooltip.css';
 import Edge from './components/Edge';
 import Node from './components/Node';
 import Toolbar from './components/Toolbar';
-import { IEdge, INode } from './types';
+import { IAlgorithm, IColor, IEdge, IMode, INode, IType } from './types';
 
 function App() {
 	// setting main variables
@@ -13,13 +13,13 @@ function App() {
 	const [edges, setEdges] = useState<IEdge[]>([]);
 	const [nodesSelected, setNodesSelected] = useState<INode[]>([]);
 	// modes states
-	const [mode, setMode] = useState('create');
-	const [algorithm, setAlgorithm] = useState('');
+	const [mode, setMode] = useState<IMode>('create');
+	const [algorithm, setAlgorithm] = useState<IAlgorithm>('');
 	// color states
-	const [nodesColor, setNodesColor] = useState('#2a507e');
-	const [edgesColor, setEdgesColor] = useState('#ffffff');
+	const [nodesColor, setNodesColor] = useState<IColor>('#2a507e');
+	const [edgesColor, setEdgesColor] = useState<IColor>('#ffffff');
 	// graph type
-	const [type, setType] = useState('');
+	const [type, setType] = useState<IType>('');
 	// algorithm variables
 	const [viewVisited, setViewVisited] = useState<boolean[]>([]);
 	const [viewDead, setViewDead] = useState<boolean[]>([]);

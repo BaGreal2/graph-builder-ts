@@ -13,7 +13,7 @@ import {
 	TrashIcon,
 } from '../../assets/icons';
 import { generateEdges } from '../../helpers';
-import { IEdge, INode } from '../../types';
+import { IAlgorithm, IColor, IEdge, IMode, INode, IType } from '../../types';
 import Choice from '../Choice';
 import ColorSelection from '../ColorSelection';
 import UploadBtn from '../UploadBtn';
@@ -27,15 +27,15 @@ interface ToolbarProps {
 	setNodesSelected: Dispatch<SetStateAction<INode[]>>;
 	setNodes: Dispatch<SetStateAction<INode[]>>;
 	setEdges: Dispatch<SetStateAction<IEdge[]>>;
-	mode: string;
-	setMode: Dispatch<SetStateAction<string>>;
-	nodesColor: string;
-	setNodesColor: Dispatch<SetStateAction<string>>;
-	edgesColor: string;
-	setEdgesColor: Dispatch<SetStateAction<string>>;
-	type: string;
-	setType: Dispatch<SetStateAction<string>>;
-	setAlgorithm: Dispatch<SetStateAction<string>>;
+	mode: IMode;
+	setMode: Dispatch<SetStateAction<IMode>>;
+	nodesColor: IColor;
+	setNodesColor: Dispatch<SetStateAction<IColor>>;
+	edgesColor: IColor;
+	setEdgesColor: Dispatch<SetStateAction<IColor>>;
+	type: IType;
+	setType: Dispatch<SetStateAction<IType>>;
+	setAlgorithm: Dispatch<SetStateAction<IAlgorithm>>;
 }
 
 function Toolbar({
@@ -64,7 +64,7 @@ function Toolbar({
 	const typeActive = nodes.some((node) => node.connections.length > 0);
 
 	// connecting selected edges
-	function onConnect(type: string) {
+	function onConnect(type: IType) {
 		// showing modal dialog only once
 		setFirstClick(false);
 		if (firstClick) {
@@ -137,7 +137,7 @@ function Toolbar({
 	}
 
 	// setting algorithm
-	function onAlgorithmMode(algorithm: string) {
+	function onAlgorithmMode(algorithm: IAlgorithm) {
 		if (nodes.length === 0) {
 			return;
 		}

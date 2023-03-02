@@ -1,11 +1,11 @@
 import { Dispatch, SetStateAction, useState } from 'react';
 import { Arrow, Group, Line, Text } from 'react-konva';
 import { countColor, generateEdges } from '../../helpers';
-import { IEdge, INode } from '../../types';
+import { IEdge, IMode, INode } from '../../types';
 
 interface EdgeProps {
 	edge: IEdge;
-	mode: string;
+	mode: IMode;
 	edgesColor: string;
 	nodes: INode[];
 	setNodes: Dispatch<SetStateAction<INode[]>>;

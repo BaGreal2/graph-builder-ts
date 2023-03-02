@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { deepFirstSearch } from '../../algorithms';
 import { countColor, generateEdges } from '../../helpers';
-import { IEdge, INode } from '../../types';
+import { IAlgorithm, IEdge, IMode, INode } from '../../types';
 
 interface NodeProps {
 	node: INode;
@@ -12,13 +12,13 @@ interface NodeProps {
 	nodes: INode[];
 	setNodes: Dispatch<SetStateAction<INode[]>>;
 	setEdges: Dispatch<SetStateAction<IEdge[]>>;
-	mode: string;
+	mode: IMode;
 	nodesColor: string;
 	viewVisited: boolean[];
 	viewDead: boolean[];
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>;
 	setViewDead: Dispatch<SetStateAction<boolean[]>>;
-	algorithm: string;
+	algorithm: IAlgorithm;
 }
 
 function Node({
