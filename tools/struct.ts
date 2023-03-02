@@ -34,15 +34,21 @@ fs.readdir(folderPath, (err, files) => {
 		return fileObj;
 	});
 
-	console.log(options.path);
-
 	let writeStr = '';
 
 	fileNames.forEach((fileObj) => {
 		if (fileObj.nameWithExt === 'index.ts') {
 			return;
 		}
-		writeStr += `export {default as ${fileObj.nameWithoutExt}} from './${fileObj.nameWithExt}';`;
+		if (options.path === 'types') {
+			writeStr += `export {type ${
+				'I' +
+				fileObj.nameWithoutExt.charAt(0).toUpperCase() +
+				fileObj.nameWithoutExt.slice(1).split(/\.(?=[^\.]+$)/)[0]
+			}} from './${fileObj.nameWithoutExt}';`;
+		} else {
+			writeStr += `export {default as ${fileObj.nameWithoutExt}} from './${fileObj.nameWithoutExt}';`;
+		}
 	});
 
 	fs.writeFileSync(path.join(folderPath, 'index.ts'), writeStr);

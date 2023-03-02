@@ -71,6 +71,8 @@ function App() {
 				type={type}
 				setType={setType}
 				setAlgorithm={setAlgorithm}
+				setViewVisited={setViewVisited}
+				setViewDead={setViewDead}
 			/>
 			<Stage
 				width={window.innerWidth - 50}

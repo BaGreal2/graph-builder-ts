@@ -1,5 +1,6 @@
 import { saveAs } from 'file-saver';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
+import { eulersPath } from '../../algorithms';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -36,6 +37,8 @@ interface ToolbarProps {
 	type: IType;
 	setType: Dispatch<SetStateAction<IType>>;
 	setAlgorithm: Dispatch<SetStateAction<IAlgorithm>>;
+	setViewVisited: Dispatch<SetStateAction<boolean[]>>;
+	setViewDead: Dispatch<SetStateAction<boolean[]>>;
 }
 
 function Toolbar({
@@ -53,12 +56,14 @@ function Toolbar({
 	type,
 	setType,
 	setAlgorithm,
+	setViewVisited,
+	setViewDead,
 }: ToolbarProps) {
 	// setting toolbar states
-	const [showChoiceColor, setShowChoiceColor] = useState(false);
-	const [showChoiceSave, setShowChoiceSave] = useState(false);
-	const [showAlgorithms, setShowAlgorithms] = useState(false);
-	const [firstClick, setFirstClick] = useState(true);
+	const [showChoiceColor, setShowChoiceColor] = useState<boolean>(false);
+	const [showChoiceSave, setShowChoiceSave] = useState<boolean>(false);
+	const [showAlgorithms, setShowAlgorithms] = useState<boolean>(false);
+	const [firstClick, setFirstClick] = useState<boolean>(true);
 	// checking if connection button needs to be active
 	const connectionActive = nodesSelected.length > 1;
 	const typeActive = nodes.some((node) => node.connections.length > 0);
@@ -285,6 +290,15 @@ function Toolbar({
 									text: 'DFS',
 									func: () => onAlgorithmMode('dfs'),
 									tooltip: 'Deep First Search',
+								},
+								{
+									text: 'E Path',
+									func: () => {
+										const nodesCopy = JSON.parse(JSON.stringify(nodes));
+										setMode('algorithm');
+										eulersPath(nodesCopy, setViewVisited, setViewDead);
+									},
+									tooltip: `Euler's Path`,
 								},
 							]}
 						/>

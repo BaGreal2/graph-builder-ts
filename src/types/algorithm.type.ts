@@ -1,1 +1,1 @@
-export type IAlgorithm = 'dfs' | '';
+export type IAlgorithm = 'dfs' | 'eulerspath' | '';
