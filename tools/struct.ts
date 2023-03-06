@@ -41,11 +41,19 @@ fs.readdir(folderPath, (err, files) => {
 			return;
 		}
 		if (options.path === 'types') {
-			writeStr += `export {type ${
-				'I' +
-				fileObj.nameWithoutExt.charAt(0).toUpperCase() +
-				fileObj.nameWithoutExt.slice(1).split(/\.(?=[^\.]+$)/)[0]
-			}} from './${fileObj.nameWithoutExt}';`;
+			if (fileObj.nameWithoutExt.includes('enum')) {
+				writeStr += `export {default as ${
+					fileObj.nameWithoutExt.charAt(0).toUpperCase() +
+					fileObj.nameWithoutExt.slice(1).split(/\.(?=[^.]+$)/)[0] +
+					'Values'
+				}} from './${fileObj.nameWithoutExt}';`;
+			} else {
+				writeStr += `export {type ${
+					'I' +
+					fileObj.nameWithoutExt.charAt(0).toUpperCase() +
+					fileObj.nameWithoutExt.slice(1).split(/\.(?=[^.]+$)/)[0]
+				}} from './${fileObj.nameWithoutExt}';`;
+			}
 		} else {
 			writeStr += `export {default as ${fileObj.nameWithoutExt}} from './${fileObj.nameWithoutExt}';`;
 		}

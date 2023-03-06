@@ -1,14 +1,13 @@
 import { ChangeEvent, Dispatch, SetStateAction } from 'react';
 import { UploadIcon } from '../../assets/icons';
 import { generateEdges, getRandomInt } from '../../helpers';
-import { IColor, IEdge, INode, IType } from '../../types';
+import { IColor, IEdge, INode } from '../../types';
 import styles from './UploadBtn.module.css';
 
 interface UploadBtnProps {
 	tooltipText: string;
 	setNodes: Dispatch<SetStateAction<INode[]>>;
 	setEdges: Dispatch<SetStateAction<IEdge[]>>;
-	setType: Dispatch<SetStateAction<IType>>;
 	setFirstClick: Dispatch<SetStateAction<boolean>>;
 	active: boolean;
 	setNodesColor: Dispatch<SetStateAction<IColor>>;
@@ -20,7 +19,6 @@ function UploadBtn({
 	tooltipText,
 	setNodes,
 	setEdges,
-	setType,
 	setFirstClick,
 	active,
 	setNodesColor,
@@ -62,18 +60,14 @@ function UploadBtn({
 	// updating states to loaded .json file
 	function onReaderLoadJSON(e: any) {
 		const res = JSON.parse(e.target.result);
-		const { type, nodesColor, edgesColor, nodes } = res;
-		if (type === '') {
-			setFirstClick(true);
-		} else {
-			setFirstClick(false);
-		}
+		const { nodesColor, edgesColor, nodes } = res;
+		setFirstClick(true);
 		setNodes([...nodes]);
-		setType(type);
 		setNodesColor(nodesColor);
 		setEdgesColor(edgesColor);
 		generateEdges(nodes, setEdges);
 	}
+
 	return (
 		<div
 			className={styles.toolContainer}

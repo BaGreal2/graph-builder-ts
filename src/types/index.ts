@@ -1,5 +1,6 @@
-export { type IAlgorithm } from './algorithm.type';
+export { default as AlgorithmValues } from './algorithm.enum';
 export { type IColor } from './color.type';
 export { type IEdge } from './edge.interface';
+export { default as ModeValues } from './mode.enum';
 export { type INode } from './node.interface';
-export { type IType } from './type.type';
+export { default as TypeValues } from './type.enum';

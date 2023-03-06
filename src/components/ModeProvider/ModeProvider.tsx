@@ -5,16 +5,7 @@ import {
 	SetStateAction,
 	useState,
 } from 'react';
-
-export enum ModeValues {
-	CREATE,
-	WEIGHT,
-	UPSCALE,
-	DOWNSCALE,
-	DELETE,
-	COLOR,
-	ALGORITHM,
-}
+import { ModeValues } from '../../types';
 
 interface IModeContext {
 	mode: ModeValues;
