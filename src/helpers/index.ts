@@ -1,4 +1,5 @@
-export { default as countColor } from './countColor.js';
-export { default as generateEdges } from './generateEdges.js';
-export { default as getConnectorPoints } from './getConnectorPoints.js';
-export { default as getRandomInt } from './getRandomInt.js';
+export { default as countColor } from './countColor';
+export { default as generateEdges } from './generateEdges';
+export { default as getConnectorPoints } from './getConnectorPoints';
+export { default as getRandomInt } from './getRandomInt';
+export { default as goByPath } from './goByPath';

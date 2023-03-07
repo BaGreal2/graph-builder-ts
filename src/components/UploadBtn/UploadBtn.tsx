@@ -37,9 +37,8 @@ function UploadBtn({
 	}
 
 	// updating states to loaded .txt file
-	function onReaderLoadTXT(e: any) {
-		const res = JSON.parse(e.target.result);
-		// const nodesRaw = res.nodes;
+	function onReaderLoadTXT(e: ProgressEvent<FileReader>) {
+		const res = JSON.parse(e.target?.result as string);
 		const nodesRaw = res;
 		const nodesNew: INode[] = nodesRaw.map((node: INode, idx: number) => {
 			return {
@@ -58,8 +57,8 @@ function UploadBtn({
 	}
 
 	// updating states to loaded .json file
-	function onReaderLoadJSON(e: any) {
-		const res = JSON.parse(e.target.result);
+	function onReaderLoadJSON(e: ProgressEvent<FileReader>) {
+		const res = JSON.parse(e.target?.result as string);
 		const { nodesColor, edgesColor, nodes } = res;
 		setFirstClick(true);
 		setNodes([...nodes]);

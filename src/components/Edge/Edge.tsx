@@ -14,7 +14,7 @@ interface EdgeProps {
 
 function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 	// destructing edge
-	const { from, to, index1, index2, weight, points, type } = edge;
+	const { from, to, index1, index2, weight, points, type, state } = edge;
 	// setting current weight state
 	const [weightCurr, setWeightCurr] = useState<string | null>(
 		weight ? weight.toString() : ''
@@ -23,7 +23,16 @@ function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 
 	// weight color diff and setting
 	const weightColorDiff = 0xffffff - 0xc28547;
+	const visitedColorDiff = 0xffffff - 0xba7245;
+	const deadColorDiff = 0xffffff - 0x4d4d4f;
 	const weightColor = countColor(edgesColor, weightColorDiff);
+	let currFill = edgesColor;
+	if (state === 'visited') {
+		currFill = countColor(edgesColor, visitedColorDiff);
+	}
+	if (state === 'dead-end') {
+		currFill = countColor(edgesColor, deadColorDiff);
+	}
 	// deciding wether edge is in select state
 	const selectState = mode === ModeValues.WEIGHT || mode === ModeValues.DELETE;
 
@@ -95,8 +104,8 @@ function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 		>
 			{type === 'undirect' && (
 				<Line
-					fill={edgesColor}
-					stroke={edgesColor}
+					fill={currFill}
+					stroke={currFill}
 					strokeWidth={selectState ? 5 : 2}
 					hitStrokeWidth={35}
 					points={points}
@@ -105,8 +114,8 @@ function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 
 			{type === 'direct' && (
 				<Arrow
-					fill={edgesColor}
-					stroke={edgesColor}
+					fill={currFill}
+					stroke={currFill}
 					strokeWidth={selectState ? 5 : 2}
 					hitStrokeWidth={35}
 					points={points}

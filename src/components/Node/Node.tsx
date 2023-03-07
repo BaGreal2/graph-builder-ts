@@ -8,6 +8,7 @@ import { ModeContext } from '../ModeProvider';
 
 interface NodeProps {
 	node: INode;
+	edges: IEdge[];
 	nodesSelected: INode[];
 	setNodesSelected: Dispatch<SetStateAction<INode[]>>;
 	nodes: INode[];
@@ -19,10 +20,17 @@ interface NodeProps {
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>;
 	setViewDead: Dispatch<SetStateAction<boolean[]>>;
 	algorithm: AlgorithmValues;
+	setShowModal: Dispatch<
+		SetStateAction<{
+			text: string;
+			confirm?: boolean;
+		}>
+	>;
 }
 
 function Node({
 	node,
+	edges,
 	nodesSelected,
 	setNodesSelected,
 	nodes,
@@ -34,6 +42,7 @@ function Node({
 	setViewVisited,
 	setViewDead,
 	algorithm,
+	setShowModal,
 }: NodeProps) {
 	// destructing node
 	const { index, x, y, radius } = node;
@@ -127,7 +136,10 @@ function Node({
 					nodesCopy,
 					setViewVisited,
 					setViewDead,
-					nodes[index - 1]
+					nodes[index - 1],
+					edges,
+					setEdges,
+					setShowModal
 				);
 				break;
 		}

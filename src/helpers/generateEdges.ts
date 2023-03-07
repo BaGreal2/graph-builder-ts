@@ -14,8 +14,10 @@ export default function generateEdges(
 			if (!node2) {
 				return;
 			}
-			let index1 = node1.connections.length > 0 ? node1.connections.length : 1;
-			let index2 = node2.connections.length > 0 ? node2.connections.length : 1;
+			const index1 =
+				node1.connections.length > 0 ? node1.connections.length : 1;
+			const index2 =
+				node2.connections.length > 0 ? node2.connections.length : 1;
 
 			let thisType = 'direct';
 			if (
@@ -34,6 +36,7 @@ export default function generateEdges(
 				weight: connection[1],
 				points: getConnectorPoints(node1, node2),
 				type: thisType,
+				state: '' as const,
 			};
 			newEdges.push(newEdge);
 		});

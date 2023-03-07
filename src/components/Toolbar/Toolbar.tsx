@@ -41,6 +41,7 @@ interface ToolbarProps {
 	nodesSelected: INode[];
 	setNodesSelected: Dispatch<SetStateAction<INode[]>>;
 	setNodes: Dispatch<SetStateAction<INode[]>>;
+	edges: IEdge[];
 	setEdges: Dispatch<SetStateAction<IEdge[]>>;
 	nodesColor: IColor;
 	setNodesColor: Dispatch<SetStateAction<IColor>>;
@@ -49,6 +50,8 @@ interface ToolbarProps {
 	setAlgorithm: Dispatch<SetStateAction<AlgorithmValues>>;
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>;
 	setViewDead: Dispatch<SetStateAction<boolean[]>>;
+	setPath: Dispatch<SetStateAction<number[]>>;
+	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>;
 }
 
 function Toolbar({
@@ -56,6 +59,7 @@ function Toolbar({
 	nodesSelected,
 	setNodesSelected,
 	setNodes,
+	edges,
 	setEdges,
 	nodesColor,
 	setNodesColor,
@@ -64,6 +68,8 @@ function Toolbar({
 	setAlgorithm,
 	setViewVisited,
 	setViewDead,
+	setPath,
+	setShowModal,
 }: ToolbarProps) {
 	// setting toolbar states
 	const [showChoiceColor, setShowChoiceColor] = useState<boolean>(false);
@@ -303,7 +309,15 @@ function Toolbar({
 									func: () => {
 										const nodesCopy = JSON.parse(JSON.stringify(nodes));
 										setMode!(ModeValues.ALGORITHM);
-										eulersPath(nodesCopy, setViewVisited, setViewDead);
+										eulersPath(
+											nodesCopy,
+											setViewVisited,
+											setViewDead,
+											setPath,
+											edges,
+											setEdges,
+											setShowModal
+										);
 									},
 									tooltip: `Euler's Path`,
 								},

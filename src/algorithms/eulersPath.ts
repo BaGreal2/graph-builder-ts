@@ -1,69 +1,97 @@
 import { Dispatch, SetStateAction } from 'react';
-import { INode } from '../types';
+import { INode, IEdge } from '../types';
 
 export default function eulersPath(
-  nodes: INode[],
-  setViewVisited: Dispatch<SetStateAction<boolean[]>>,
-  setViewDead: Dispatch<SetStateAction<boolean[]>>
-): number[] {
-  setViewDead([]);
-  setViewVisited([]);
+	nodes: INode[],
+	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
+	setViewDead: Dispatch<SetStateAction<boolean[]>>,
+	setPath: Dispatch<SetStateAction<number[]>>,
+	edges: IEdge[],
+	setEdges: Dispatch<SetStateAction<IEdge[]>>,
+	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>
+) {
+	setViewDead([]);
+	setViewVisited([]);
 
-  const visited = new Array(nodes.length).fill(false);
-  const deadEnds = new Array(nodes.length).fill(false);
-  const path: number[] = [];
-  const startNode = nodes.find((node) => node.connections.length % 2) || null;
-  if (!startNode) {
-    console.log('Not Possible!');
-    return path;
-  }
-  const stack: INode[] = [startNode];
+	const visited = new Array(nodes.length).fill(false);
+	const deadEnds = new Array(nodes.length).fill(false);
+	const path: number[] = [];
+	const edgesCopy = [...edges];
 
-  // loop with a timeout
-  const loop = setInterval(() => {
-    // getting last node from stack
-    const curr = stack[stack.length - 1];
+	const startNode = nodes.find((node) => node.connections.length % 2) || null;
+	if (!startNode) {
+		console.log('Not Possible!');
+		setShowModal({ text: 'Not possible to find path!' });
+		return;
+	}
+	const stack: INode[] = [startNode];
 
-    if (curr.connections.length === 0) {
-      // if dead end -> go back in stack and push index from stack to path arr
-      const elem = stack.pop();
-      if (!elem) {
-        return;
-      }
-      path.push(elem.index);
+	// loop with a timeout
+	const loop = setInterval(() => {
+		// getting last node from stack
+		const curr = stack[stack.length - 1];
 
-      // setting dead-end state
-      deadEnds[curr.index - 1] = true;
-      setViewDead([...deadEnds]);
-    } else {
-      // finding connection with minimal index
-      const minConnection = curr.connections.reduce((min, connection) =>
-        connection[0]! < min[0]! ? connection : min
-      );
-      const indexOfMin = minConnection[0]! - 1;
-      const connectionFromIndex = curr.connections.indexOf(minConnection);
-      const connectionToIndex = nodes[indexOfMin].connections.findIndex(
-        (connection) => connection[0] === curr.index
-      )!;
+		if (curr.connections.length === 0) {
+			// if dead end -> go back in stack and push index from stack to path arr
+			const elem = stack.pop();
+			if (!elem) {
+				return;
+			}
+			path.push(elem.index);
 
-      // deleting connection
-      nodes[curr.index - 1].connections.splice(connectionFromIndex, 1);
-      nodes[indexOfMin].connections.splice(connectionToIndex, 1);
+			// setting dead-end state
+			edgesCopy.map((edge) => {
+				if (
+					(edge.from === curr.index &&
+						edge.to === stack[stack.length - 1]?.index) ||
+					(edge.to === curr.index &&
+						edge.from === stack[stack.length - 1]?.index)
+				) {
+					edge.state = 'dead-end';
+				}
+			});
+			deadEnds[curr.index - 1] = true;
+			setEdges([...edgesCopy]);
+			setViewDead([...deadEnds]);
+		} else {
+			// finding connection with minimal index
+			const minConnection = curr.connections.reduce((min, connection) =>
+				connection[0]! < min[0]! ? connection : min
+			);
+			const indexOfMin = minConnection[0]! - 1;
+			const connectionFromIndex = curr.connections.indexOf(minConnection);
+			const connectionToIndex = nodes[indexOfMin].connections.findIndex(
+				(connection) => connection[0] === curr.index
+			)!;
 
-      // setting visited node state
-      visited[curr.index - 1] = true;
-      setViewVisited([...visited]);
-      // pushing node with min index to stack
-      stack.push(nodes[indexOfMin]);
-    }
+			// deleting connection
+			nodes[curr.index - 1].connections.splice(connectionFromIndex, 1);
+			nodes[indexOfMin].connections.splice(connectionToIndex, 1);
 
-    // continue until stack is empty
-    if (stack.length === 0) {
-      clearInterval(loop);
-      console.log(path.reverse());
-      return path;
-    }
-  }, 150);
+			// setting visited node state
+			edgesCopy.map((edge) => {
+				if (
+					(edge.from === curr.index && edge.to === indexOfMin + 1) ||
+					(edge.to === curr.index && edge.from === indexOfMin + 1)
+				) {
+					edge.state = 'visited';
+				}
+			});
+			visited[curr.index - 1] = true;
+			setEdges([...edgesCopy]);
+			setViewVisited([...visited]);
+			// pushing node with min index to stack
+			stack.push(nodes[indexOfMin]);
+		}
 
-  return path;
+		// continue until stack is empty
+		if (stack.length === 0) {
+			clearInterval(loop);
+			setPath([...path].reverse());
+			setShowModal({
+				text: [...path].reverse().toString().split(',').join('-'),
+				confirm: true,
+			});
+		}
+	}, 150);
 }

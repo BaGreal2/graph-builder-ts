@@ -6,4 +6,5 @@ export interface IEdge {
 	weight: number | null;
 	points: number[];
 	type: string;
+	state: 'visited' | 'dead-end' | '';
 }
