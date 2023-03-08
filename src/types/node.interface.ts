@@ -3,5 +3,5 @@ export interface INode {
 	x: number;
 	y: number;
 	radius: number;
-	connections: (number | null)[][];
+	connections: [number, number | null][];
 }
