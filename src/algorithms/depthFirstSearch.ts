@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
 import { INode, IEdge } from '../types';
 
-export default function deepFirstSearch(
+export default function depthFirstSearch(
 	nodes: INode[],
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
@@ -24,6 +24,7 @@ export default function deepFirstSearch(
 	const edgesCopy = [...edges];
 	edgesCopy.forEach((edge) => (edge.state = ''));
 
+	let foundIndexGlobal: number;
 	// loop with a timeout
 	const loop = setInterval(() => {
 		// getting last node from stack
@@ -33,19 +34,21 @@ export default function deepFirstSearch(
 		if (!visited[curr.index - 1]) {
 			visited[curr.index - 1] = true;
 			setViewVisited([...visited]);
-			let foundIndex: number;
+			let foundIndexCurr: number;
 
 			for (const connection of curr.connections) {
 				if (!visited[connection[0] - 1]) {
 					stack.push(nodes[connection[0] - 1]);
-					foundIndex = nodes[connection[0] - 1].index;
+					foundIndexCurr = nodes[connection[0] - 1].index;
 					break;
 				}
 			}
 			edgesCopy.map((edge) => {
 				if (
-					(edge.from === curr.index && edge.to === foundIndex) ||
-					(edge.to === curr.index && edge.from === foundIndex)
+					(edge.from === curr.index && edge.to === foundIndexCurr) ||
+					(edge.to === curr.index && edge.from === foundIndexCurr) ||
+					(edge.from === curr.index && edge.to === foundIndexGlobal) ||
+					(edge.to === curr.index && edge.from === foundIndexGlobal)
 				) {
 					edge.state = 'visited';
 				}
@@ -73,6 +76,7 @@ export default function deepFirstSearch(
 				for (const connection of curr.connections) {
 					if (!visited[connection[0] - 1]) {
 						stack.push(nodes[connection[0] - 1]);
+						foundIndexGlobal = curr.index;
 						break;
 					}
 				}

@@ -1,7 +1,7 @@
 import Konva from 'konva';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { Circle, Group, Text } from 'react-konva';
-import { deepFirstSearch } from '../../algorithms';
+import { depthFirstSearch } from '../../algorithms';
 import { countColor, generateEdges } from '../../helpers';
 import { IEdge, INode, ModeValues, AlgorithmValues } from '../../types';
 import { ModeContext } from '../ModeProvider';
@@ -132,7 +132,7 @@ function Node({
 		const nodesCopy = JSON.parse(JSON.stringify(nodes));
 		switch (algorithm) {
 			case AlgorithmValues.DFS:
-				deepFirstSearch(
+				depthFirstSearch(
 					nodesCopy,
 					setViewVisited,
 					setViewDead,

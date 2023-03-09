@@ -302,7 +302,7 @@ function Toolbar({
 								{
 									text: 'DFS',
 									func: () => onAlgorithmMode(AlgorithmValues.DFS),
-									tooltip: 'Deep First Search',
+									tooltip: 'Depth First Search',
 								},
 								{
 									text: 'E Path',
