@@ -18,13 +18,24 @@ export default function eulersPath(
 	const path: number[] = [];
 	const edgesCopy = [...edges];
 
-	const startNode = nodes.find((node) => node.connections.length % 2) || null;
+	let startNode =
+		nodes.find((node) => node.connections.length % 2 !== 0) || null;
 	if (!startNode) {
-		console.log('Not Possible!');
+		startNode = nodes[0];
+	}
+	const amountOfOdd = nodes.reduce((acc, node) => {
+		if (node.connections.length % 2 !== 0) {
+			return acc + 1;
+		}
+		return acc;
+	}, 0);
+
+	if (amountOfOdd !== 2 && amountOfOdd !== 0) {
 		setShowModal({ text: 'Not possible to find path!' });
 		return;
 	}
-	const stack: INode[] = [startNode];
+
+	const stack: INode[] = [startNode!];
 
 	// loop with a timeout
 	const loop = setInterval(() => {
@@ -88,8 +99,12 @@ export default function eulersPath(
 		if (stack.length === 0) {
 			clearInterval(loop);
 			setPath([...path].reverse());
+			let throwText = [...path].reverse().toString().split(',').join('-');
+			if (path[path.length - 1] === path[0]) {
+				throwText += ' cycle!';
+			}
 			setShowModal({
-				text: [...path].reverse().toString().split(',').join('-'),
+				text: throwText,
 				confirm: true,
 			});
 		}
