@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
+import isGraphConnected from '../helpers/isGraphConnected';
 import { INode, IEdge } from '../types';
 
 export default function eulersPath(
@@ -30,7 +31,10 @@ export default function eulersPath(
 		return acc;
 	}, 0);
 
-	if (amountOfOdd !== 2 && amountOfOdd !== 0) {
+	if (
+		(amountOfOdd !== 2 && amountOfOdd !== 0) ||
+		!isGraphConnected(nodes, nodes[0])
+	) {
 		setShowModal({ text: 'Not possible to find path!' });
 		return;
 	}

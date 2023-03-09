@@ -36,9 +36,9 @@ export default function deepFirstSearch(
 			let foundIndex: number;
 
 			for (const connection of curr.connections) {
-				if (!visited[connection[0]! - 1]) {
-					stack.push(nodes[connection[0]! - 1]);
-					foundIndex = nodes[connection[0]! - 1].index;
+				if (!visited[connection[0] - 1]) {
+					stack.push(nodes[connection[0] - 1]);
+					foundIndex = nodes[connection[0] - 1].index;
 					break;
 				}
 			}
@@ -53,7 +53,7 @@ export default function deepFirstSearch(
 			setEdges([...edgesCopy]);
 		} else {
 			// if all connected edges are visited -> dead end
-			if (curr.connections.every((connection) => visited[connection[0]! - 1])) {
+			if (curr.connections.every((connection) => visited[connection[0] - 1])) {
 				deadEnds[curr.index - 1] = true;
 				setViewDead([...deadEnds]);
 				stack.pop();
@@ -71,8 +71,8 @@ export default function deepFirstSearch(
 			} else {
 				// if there are unvisited neibours -> push to stack first of them
 				for (const connection of curr.connections) {
-					if (!visited[connection[0]! - 1]) {
-						stack.push(nodes[connection[0]! - 1]);
+					if (!visited[connection[0] - 1]) {
+						stack.push(nodes[connection[0] - 1]);
 						break;
 					}
 				}
@@ -82,7 +82,6 @@ export default function deepFirstSearch(
 		// continue until stack is empty
 		if (stack.length === 0) {
 			clearInterval(loop);
-			console.log(deadEnds);
 			if (deadEnds.every((end) => end)) {
 				setShowModal({ text: 'Connected graph!' });
 			} else {
