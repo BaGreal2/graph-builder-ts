@@ -6,7 +6,8 @@ export default function goByPath(
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
 	edges: IEdge[],
-	setEdges: Dispatch<SetStateAction<IEdge[]>>
+	setEdges: Dispatch<SetStateAction<IEdge[]>>,
+	topSort = false
 ) {
 	setViewDead([]);
 	setViewVisited([]);
@@ -26,6 +27,13 @@ export default function goByPath(
 				edge.state = 'visited';
 			}
 		});
+		if (topSort) {
+			edgesCopy.map((edge) => {
+				if (edge.from === path[i]) {
+					edge.state = 'visited';
+				}
+			});
+		}
 		setEdges([...edgesCopy]);
 		setViewVisited([...visited]);
 		i++;

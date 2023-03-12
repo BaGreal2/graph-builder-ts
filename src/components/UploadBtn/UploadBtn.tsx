@@ -8,11 +8,12 @@ interface UploadBtnProps {
 	tooltipText: string;
 	setNodes: Dispatch<SetStateAction<INode[]>>;
 	setEdges: Dispatch<SetStateAction<IEdge[]>>;
-	setFirstClick: Dispatch<SetStateAction<boolean>>;
-	active: boolean;
 	setNodesColor: Dispatch<SetStateAction<IColor>>;
 	setEdgesColor: Dispatch<SetStateAction<IColor>>;
+	setFirstClick: Dispatch<SetStateAction<boolean>>;
+	active: boolean;
 	pressed?: boolean;
+	resetAlgorithmViews: () => void;
 }
 
 function UploadBtn({
@@ -24,10 +25,12 @@ function UploadBtn({
 	setNodesColor,
 	setEdgesColor,
 	pressed = false,
+	resetAlgorithmViews,
 }: UploadBtnProps) {
 	// loading file
 	function onChange(e: ChangeEvent<HTMLInputElement>) {
 		if (e.target.files) {
+			resetAlgorithmViews();
 			const file = e.target.files![0];
 			const isTXT = file.name.includes('.txt');
 			const reader = new FileReader();

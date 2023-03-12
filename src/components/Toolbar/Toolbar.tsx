@@ -6,7 +6,7 @@ import {
 	useEffect,
 	useState,
 } from 'react';
-import { eulersPath } from '../../algorithms';
+import { eulerianPath, topSort } from '../../algorithms';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -21,12 +21,12 @@ import {
 } from '../../assets/icons';
 import { generateEdges } from '../../helpers';
 import {
+	AlgorithmValues,
 	IColor,
 	IEdge,
 	INode,
-	TypeValues,
 	ModeValues,
-	AlgorithmValues,
+	TypeValues,
 } from '../../types';
 import Choice from '../Choice';
 import ColorSelection from '../ColorSelection';
@@ -155,11 +155,22 @@ function Toolbar({
 		onConnect(TypeValues.UNDIRECT);
 	}
 
+	function resetAlgorithmViews() {
+		setViewDead([]);
+		setViewVisited([]);
+		setPath([]);
+		setShowModal({ text: '' });
+		const edgesCopy = [...edges];
+		edgesCopy.forEach((edge) => (edge.state = ''));
+		setEdges([...edgesCopy]);
+	}
+
 	// setting algorithm
 	function onAlgorithmMode(algorithm: AlgorithmValues) {
 		if (nodes.length === 0) {
 			return;
 		}
+		resetAlgorithmViews();
 		setMode!(ModeValues.ALGORITHM);
 		setAlgorithm(algorithm);
 	}
@@ -309,7 +320,8 @@ function Toolbar({
 									func: () => {
 										const nodesCopy = JSON.parse(JSON.stringify(nodes));
 										setMode!(ModeValues.ALGORITHM);
-										eulersPath(
+										onAlgorithmMode(AlgorithmValues.EULERIANPATH);
+										eulerianPath(
 											nodesCopy,
 											setViewVisited,
 											setViewDead,
@@ -320,6 +332,24 @@ function Toolbar({
 										);
 									},
 									tooltip: `Euler's Path`,
+								},
+								{
+									text: 'TopSort',
+									func: () => {
+										const nodesCopy = JSON.parse(JSON.stringify(nodes));
+										setMode!(ModeValues.ALGORITHM);
+										onAlgorithmMode(AlgorithmValues.TOPSORT);
+										topSort(
+											nodesCopy,
+											setViewVisited,
+											setViewDead,
+											setPath,
+											setShowModal,
+											edges,
+											setEdges
+										);
+									},
+									tooltip: `Topological Sort`,
 								},
 							]}
 						/>
@@ -366,6 +396,7 @@ function Toolbar({
 					setEdgesColor={setEdgesColor}
 					setFirstClick={setFirstClick}
 					active={true}
+					resetAlgorithmViews={() => resetAlgorithmViews()}
 				/>
 
 				<SaveBtn

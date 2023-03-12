@@ -117,8 +117,8 @@ function Node({
 		nodesCopy.forEach((node, idx) => {
 			node.index = idx + 1;
 			node.connections.forEach((connection) => {
-				if (connection[0]! >= index) {
-					connection[0]!--;
+				if (connection[0] >= index) {
+					connection[0]--;
 				}
 			});
 		});
@@ -198,7 +198,7 @@ function Node({
 			y={y}
 			width={radius * 2}
 			height={radius * 2}
-			draggable
+			draggable={viewVisited.length === 0 && viewDead.length === 0}
 			dragBoundFunc={dragBoundFunc}
 			onDragMove={(e) => onDragMove(e)}
 			onMouseEnter={() => (document.body.style.cursor = 'grab')}

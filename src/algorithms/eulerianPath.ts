@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import isGraphConnected from '../helpers/isGraphConnected';
 import { INode, IEdge } from '../types';
 
-export default function eulersPath(
+export default function eulerianPath(
 	nodes: INode[],
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,

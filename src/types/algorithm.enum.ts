@@ -1,6 +1,7 @@
 enum AlgorithmValues {
 	DFS,
-	EULERSPATH,
+	EULERIANPATH,
+	TOPSORT,
 	NONE,
 }
 

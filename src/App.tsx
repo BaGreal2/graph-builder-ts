@@ -36,6 +36,7 @@ function App() {
 	function onCreateNode(e: MouseEvent) {
 		setViewVisited([]);
 		setViewDead([]);
+		setShowModal({ text: '' });
 		// checkng if node exist on click spot or other mods enabled
 		if (
 			nodes.some((node) => {
@@ -86,7 +87,8 @@ function App() {
 								setViewVisited,
 								setViewDead,
 								edges,
-								setEdges
+								setEdges,
+								algorithm === AlgorithmValues.TOPSORT
 							);
 						}}
 					/>
