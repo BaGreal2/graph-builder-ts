@@ -14,6 +14,8 @@ export default async function topSort(
 	const visited = new Array(nodes.length).fill(false);
 	const deadEnds = new Array(nodes.length).fill(false);
 	const ordering: number[] = new Array(nodes.length).fill(0);
+	const edgesCopy = [...edges];
+	edgesCopy.forEach((edge) => (edge.state = ''));
 	let i = nodes.length - 1;
 
 	for (let at = 0; at < nodes.length; at++) {
@@ -27,7 +29,7 @@ export default async function topSort(
 				nodes[at],
 				setViewVisited,
 				setViewDead,
-				edges,
+				edgesCopy,
 				setEdges
 			);
 			visitedNodes.forEach((nodeId) => {
@@ -37,9 +39,19 @@ export default async function topSort(
 		}
 	}
 
-	setPath(ordering);
-	setShowModal({
-		text: ordering.toString().split(',').join('-'),
-		confirm: true,
-	});
+	if (ordering.every((nodeId) => nodeId === 0)) {
+		edgesCopy.forEach((edge) => (edge.state = ''));
+		setShowModal({
+			text: 'Not Possible! Cycle!',
+		});
+		setViewVisited([]);
+		setViewDead([]);
+		setEdges([...edgesCopy]);
+	} else {
+		setPath(ordering);
+		setShowModal({
+			text: ordering.toString().split(',').join('-'),
+			confirm: true,
+		});
+	}
 }

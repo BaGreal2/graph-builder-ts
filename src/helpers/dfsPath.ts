@@ -13,11 +13,13 @@ export default async function dfsPath(
 	setEdges: Dispatch<SetStateAction<IEdge[]>>
 ) {
 	const stack = [startNode];
+	const pathVisited = new Array(nodes.length).fill(false);
 
 	await intervalLoop(
 		nodes,
 		stack,
 		visited,
+		pathVisited,
 		deadEnds,
 		visitedNodes,
 		setViewVisited,
@@ -31,6 +33,7 @@ function intervalLoop(
 	nodes: INode[],
 	stack: INode[],
 	visited: boolean[],
+	pathVisited: boolean[],
 	deadEnds: boolean[],
 	visitedNodes: number[],
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
@@ -47,6 +50,7 @@ function intervalLoop(
 			// if current node is not visited -> visit and push to stack it's first neighbour
 			if (!visited[curr.index - 1]) {
 				visited[curr.index - 1] = true;
+				pathVisited[curr.index - 1] = true;
 				setViewVisited([...visited]);
 
 				let foundIndexCurr: number;
@@ -56,6 +60,10 @@ function intervalLoop(
 						stack.push(nodes[connection[0] - 1]);
 						foundIndexCurr = nodes[connection[0] - 1].index;
 						break;
+					} else if (pathVisited[connection[0] - 1]) {
+						visitedNodes.fill(0);
+						clearInterval(loop);
+						resolve(loop);
 					}
 				}
 				edges.map((edge) => {
@@ -75,6 +83,7 @@ function intervalLoop(
 					curr.connections.every((connection) => visited[connection[0] - 1])
 				) {
 					deadEnds[curr.index - 1] = true;
+					pathVisited[curr.index - 1] = false;
 					if (!visitedNodes.includes(curr.index)) {
 						visitedNodes.push(curr.index);
 					}
