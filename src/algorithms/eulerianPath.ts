@@ -1,15 +1,16 @@
 import { Dispatch, SetStateAction } from 'react';
 import isGraphConnected from '../helpers/isGraphConnected';
-import { INode, IEdge } from '../types';
+import { IEdge, INode } from '../types';
 
-export default function eulerianPath(
+export default async function eulerianPath(
 	nodes: INode[],
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
 	setPath: Dispatch<SetStateAction<number[]>>,
 	edges: IEdge[],
 	setEdges: Dispatch<SetStateAction<IEdge[]>>,
-	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>
+	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>,
+	speed: number
 ) {
 	setViewDead([]);
 	setViewVisited([]);
@@ -41,76 +42,109 @@ export default function eulerianPath(
 
 	const stack: INode[] = [startNode!];
 
-	// loop with a timeout
-	const loop = setInterval(() => {
-		// getting last node from stack
-		const curr = stack[stack.length - 1];
+	await intervalLoop(
+		nodes,
+		setViewVisited,
+		setViewDead,
+		setPath,
+		edgesCopy,
+		setEdges,
+		setShowModal,
+		visited,
+		deadEnds,
+		path,
+		stack,
+		speed
+	);
+}
 
-		if (curr.connections.length === 0) {
-			// if dead end -> go back in stack and push index from stack to path arr
-			const elem = stack.pop();
-			if (!elem) {
-				return;
-			}
-			path.push(elem.index);
+function intervalLoop(
+	nodes: INode[],
+	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
+	setViewDead: Dispatch<SetStateAction<boolean[]>>,
+	setPath: Dispatch<SetStateAction<number[]>>,
+	edges: IEdge[],
+	setEdges: Dispatch<SetStateAction<IEdge[]>>,
+	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>,
+	visited: boolean[],
+	deadEnds: boolean[],
+	path: number[],
+	stack: INode[],
+	speed: number
+) {
+	return new Promise((resolve) => {
+		// loop with a timeout
+		const loop = setInterval(() => {
+			// getting last node from stack
+			const curr = stack[stack.length - 1];
 
-			// setting dead-end state
-			edgesCopy.map((edge) => {
-				if (
-					(edge.from === curr.index &&
-						edge.to === stack[stack.length - 1]?.index) ||
-					(edge.to === curr.index &&
-						edge.from === stack[stack.length - 1]?.index)
-				) {
-					edge.state = 'dead-end';
+			if (curr.connections.length === 0) {
+				// if dead end -> go back in stack and push index from stack to path arr
+				const elem = stack.pop();
+				if (!elem) {
+					return;
 				}
-			});
-			deadEnds[curr.index - 1] = true;
-			setEdges([...edgesCopy]);
-			setViewDead([...deadEnds]);
-		} else {
-			// finding connection with minimal index
-			const minConnection = curr.connections.reduce((min, connection) =>
-				connection[0]! < min[0]! ? connection : min
-			);
-			const indexOfMin = minConnection[0]! - 1;
-			const connectionFromIndex = curr.connections.indexOf(minConnection);
-			const connectionToIndex = nodes[indexOfMin].connections.findIndex(
-				(connection) => connection[0] === curr.index
-			)!;
+				path.push(elem.index);
 
-			// deleting connection
-			nodes[curr.index - 1].connections.splice(connectionFromIndex, 1);
-			nodes[indexOfMin].connections.splice(connectionToIndex, 1);
+				// setting dead-end state
+				edges.map((edge) => {
+					if (
+						(edge.from === curr.index &&
+							edge.to === stack[stack.length - 1]?.index) ||
+						(edge.to === curr.index &&
+							edge.from === stack[stack.length - 1]?.index)
+					) {
+						edge.state = 'dead-end';
+					}
+				});
+				deadEnds[curr.index - 1] = true;
+				setEdges([...edges]);
+				setViewDead([...deadEnds]);
+			} else {
+				// finding connection with minimal index
+				const minConnection = curr.connections.reduce((min, connection) =>
+					connection[0]! < min[0]! ? connection : min
+				);
+				const indexOfMin = minConnection[0]! - 1;
+				const connectionFromIndex = curr.connections.indexOf(minConnection);
+				const connectionToIndex = nodes[indexOfMin].connections.findIndex(
+					(connection) => connection[0] === curr.index
+				)!;
 
-			// setting visited node state
-			edgesCopy.map((edge) => {
-				if (
-					(edge.from === curr.index && edge.to === indexOfMin + 1) ||
-					(edge.to === curr.index && edge.from === indexOfMin + 1)
-				) {
-					edge.state = 'visited';
-				}
-			});
-			visited[curr.index - 1] = true;
-			setEdges([...edgesCopy]);
-			setViewVisited([...visited]);
-			// pushing node with min index to stack
-			stack.push(nodes[indexOfMin]);
-		}
+				// deleting connection
+				nodes[curr.index - 1].connections.splice(connectionFromIndex, 1);
+				nodes[indexOfMin].connections.splice(connectionToIndex, 1);
 
-		// continue until stack is empty
-		if (stack.length === 0) {
-			clearInterval(loop);
-			setPath([...path].reverse());
-			let throwText = [...path].reverse().toString().split(',').join('-');
-			if (path[path.length - 1] === path[0]) {
-				throwText += ' cycle!';
+				// setting visited node state
+				edges.map((edge) => {
+					if (
+						(edge.from === curr.index && edge.to === indexOfMin + 1) ||
+						(edge.to === curr.index && edge.from === indexOfMin + 1)
+					) {
+						edge.state = 'visited';
+					}
+				});
+				visited[curr.index - 1] = true;
+				setEdges([...edges]);
+				setViewVisited([...visited]);
+				// pushing node with min index to stack
+				stack.push(nodes[indexOfMin]);
 			}
-			setShowModal({
-				text: throwText,
-				confirm: true,
-			});
-		}
-	}, 150);
+
+			// continue until stack is empty
+			if (stack.length === 0) {
+				setPath([...path].reverse());
+				let throwText = [...path].reverse().toString().split(',').join('-');
+				if (path[path.length - 1] === path[0]) {
+					throwText += ' cycle!';
+				}
+				setShowModal({
+					text: throwText,
+					confirm: true,
+				});
+				clearInterval(loop);
+				resolve(loop);
+			}
+		}, speed);
+	});
 }

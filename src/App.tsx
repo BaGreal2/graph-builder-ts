@@ -31,6 +31,7 @@ function App() {
 		text: string;
 		confirm?: boolean;
 	}>({ text: '' });
+	const [algorithmSpeed, setAlgorithmSpeed] = useState<number>(150);
 
 	// creating node on field click
 	function onCreateNode(e: MouseEvent) {
@@ -88,7 +89,8 @@ function App() {
 								setViewDead,
 								edges,
 								setEdges,
-								algorithm === AlgorithmValues.TOPSORT
+								algorithm === AlgorithmValues.TOPSORT,
+								algorithmSpeed
 							);
 						}}
 					/>
@@ -110,7 +112,10 @@ function App() {
 				setViewVisited={setViewVisited}
 				setViewDead={setViewDead}
 				setPath={setPath}
+				showModal={showModal}
 				setShowModal={setShowModal}
+				algorithmSpeed={algorithmSpeed}
+				setAlgorithmSpeed={setAlgorithmSpeed}
 			/>
 			<Stage
 				width={window.innerWidth - 50}
@@ -149,6 +154,7 @@ function App() {
 								setViewDead={setViewDead}
 								algorithm={algorithm}
 								setShowModal={setShowModal}
+								algorithmSpeed={algorithmSpeed}
 							/>
 						);
 					})}

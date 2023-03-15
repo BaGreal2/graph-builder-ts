@@ -1,5 +1,5 @@
 import { Dispatch, SetStateAction } from 'react';
-import { dfsPath } from '../helpers';
+import { depthFirstSearch } from '.';
 import { IEdge, INode } from '../types';
 
 export default async function topSort(
@@ -9,28 +9,40 @@ export default async function topSort(
 	setPath: Dispatch<SetStateAction<number[]>>,
 	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>,
 	edges: IEdge[],
-	setEdges: Dispatch<SetStateAction<IEdge[]>>
+	setEdges: Dispatch<SetStateAction<IEdge[]>>,
+	speed: number
 ) {
+	setViewDead([]);
+	setViewVisited([]);
 	const visited = new Array(nodes.length).fill(false);
 	const deadEnds = new Array(nodes.length).fill(false);
-	const ordering: number[] = new Array(nodes.length).fill(0);
+	const ordering = new Array(nodes.length).fill(0);
 	const edgesCopy = [...edges];
+
+	if (edgesCopy.some((edge) => edge.type === 'undirect')) {
+		setShowModal({
+			text: 'Not Possible! Not a directed graph!',
+		});
+		return;
+	}
 	edgesCopy.forEach((edge) => (edge.state = ''));
+
 	let i = nodes.length - 1;
 
 	for (let at = 0; at < nodes.length; at++) {
 		if (!visited[at]) {
 			const visitedNodes: number[] = [];
-			await dfsPath(
+			await depthFirstSearch(
 				nodes,
 				visited,
 				deadEnds,
-				visitedNodes,
 				nodes[at],
 				setViewVisited,
 				setViewDead,
 				edgesCopy,
-				setEdges
+				setEdges,
+				speed,
+				visitedNodes
 			);
 			visitedNodes.forEach((nodeId) => {
 				ordering[i] = nodeId;

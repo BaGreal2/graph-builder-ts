@@ -3,7 +3,7 @@ import { Dispatch, SetStateAction, useContext } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { depthFirstSearch } from '../../algorithms';
 import { countColor, generateEdges } from '../../helpers';
-import { IEdge, INode, ModeValues, AlgorithmValues } from '../../types';
+import { AlgorithmValues, IEdge, INode, ModeValues } from '../../types';
 import { ModeContext } from '../ModeProvider';
 
 interface NodeProps {
@@ -26,6 +26,7 @@ interface NodeProps {
 			confirm?: boolean;
 		}>
 	>;
+	algorithmSpeed: number;
 }
 
 function Node({
@@ -43,6 +44,7 @@ function Node({
 	setViewDead,
 	algorithm,
 	setShowModal,
+	algorithmSpeed,
 }: NodeProps) {
 	// destructing node
 	const { index, x, y, radius } = node;
@@ -128,19 +130,34 @@ function Node({
 	}
 
 	// running current algorithm
-	function onAlgorithm() {
+	async function onAlgorithm() {
 		const nodesCopy = JSON.parse(JSON.stringify(nodes));
+		const visited = new Array(nodes.length).fill(false);
+		const deadEnds = new Array(nodes.length).fill(false);
 		switch (algorithm) {
 			case AlgorithmValues.DFS:
-				depthFirstSearch(
+				setViewVisited([]);
+				setViewDead([]);
+
+				await depthFirstSearch(
 					nodesCopy,
+					visited,
+					deadEnds,
+					nodes[index - 1],
 					setViewVisited,
 					setViewDead,
-					nodes[index - 1],
 					edges,
 					setEdges,
-					setShowModal
+					algorithmSpeed
 				);
+
+				if (deadEnds.every((end) => end)) {
+					setShowModal({ text: 'Connected graph!' });
+				} else {
+					setShowModal({ text: 'Not connected graph!' });
+				}
+				break;
+			default:
 				break;
 		}
 	}

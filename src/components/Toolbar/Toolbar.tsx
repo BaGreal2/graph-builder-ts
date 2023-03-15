@@ -31,6 +31,7 @@ import {
 import Choice from '../Choice';
 import ColorSelection from '../ColorSelection';
 import { ModeContext } from '../ModeProvider';
+import Slider from '../Slider';
 import UploadBtn from '../UploadBtn';
 import SaveBtn from './SaveBtn';
 import styles from './Toolbar.module.css';
@@ -51,7 +52,10 @@ interface ToolbarProps {
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>;
 	setViewDead: Dispatch<SetStateAction<boolean[]>>;
 	setPath: Dispatch<SetStateAction<number[]>>;
+	showModal: { text: string; confirm?: boolean | undefined };
 	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>;
+	algorithmSpeed: number;
+	setAlgorithmSpeed: Dispatch<SetStateAction<number>>;
 }
 
 function Toolbar({
@@ -69,7 +73,10 @@ function Toolbar({
 	setViewVisited,
 	setViewDead,
 	setPath,
+	showModal,
 	setShowModal,
+	algorithmSpeed,
+	setAlgorithmSpeed,
 }: ToolbarProps) {
 	// setting toolbar states
 	const [showChoiceColor, setShowChoiceColor] = useState<boolean>(false);
@@ -317,21 +324,24 @@ function Toolbar({
 								},
 								{
 									text: 'E Path',
-									func: () => {
+									func: async () => {
 										const nodesCopy = JSON.parse(JSON.stringify(nodes));
 										setMode!(ModeValues.ALGORITHM);
 										onAlgorithmMode(AlgorithmValues.EULERIANPATH);
-										eulerianPath(
+										setViewDead([]);
+										setViewVisited([]);
+										await eulerianPath(
 											nodesCopy,
 											setViewVisited,
 											setViewDead,
 											setPath,
 											edges,
 											setEdges,
-											setShowModal
+											setShowModal,
+											algorithmSpeed
 										);
 									},
-									tooltip: `Euler's Path`,
+									tooltip: `Eulerian Path`,
 								},
 								{
 									text: 'TopSort',
@@ -346,7 +356,8 @@ function Toolbar({
 											setPath,
 											setShowModal,
 											edges,
-											setEdges
+											setEdges,
+											algorithmSpeed
 										);
 									},
 									tooltip: `Topological Sort`,
@@ -385,6 +396,9 @@ function Toolbar({
 						{type === TypeValues.DIRECT && <ArrowRightIcon />}
 						{type === TypeValues.UNDIRECT && <LineIcon />}
 					</ToolBtn>
+				)}
+				{(showAlgorithms || showModal.confirm) && (
+					<Slider value={algorithmSpeed} setValue={setAlgorithmSpeed} />
 				)}
 			</div>
 			<div className={styles.save}>

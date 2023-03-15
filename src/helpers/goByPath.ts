@@ -7,7 +7,8 @@ export default function goByPath(
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
 	edges: IEdge[],
 	setEdges: Dispatch<SetStateAction<IEdge[]>>,
-	topSort = false
+	topSort = false,
+	speed: number
 ) {
 	setViewDead([]);
 	setViewVisited([]);
@@ -41,5 +42,5 @@ export default function goByPath(
 		if (i === path.length) {
 			clearInterval(loop);
 		}
-	}, 150);
+	}, speed);
 }

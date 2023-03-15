@@ -19,7 +19,7 @@ export default function generateEdges(
 			const index2 =
 				node2.connections.length > 0 ? node2.connections.length : 1;
 
-			let thisType = 'direct';
+			let thisType: 'direct' | 'undirect' = 'direct';
 			if (
 				node2.connections.some((connection) => {
 					return connection[0] === node1.index;
