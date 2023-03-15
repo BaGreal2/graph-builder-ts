@@ -44,6 +44,18 @@ export default async function topSort(
 				speed,
 				visitedNodes
 			);
+
+			if (visitedNodes.length === 0) {
+				edgesCopy.forEach((edge) => (edge.state = ''));
+				setShowModal({
+					text: 'Not Possible! Cycle!',
+				});
+				setViewVisited([]);
+				setViewDead([]);
+				setEdges([...edgesCopy]);
+				return;
+			}
+
 			visitedNodes.forEach((nodeId) => {
 				ordering[i] = nodeId;
 				i--;
@@ -51,19 +63,9 @@ export default async function topSort(
 		}
 	}
 
-	if (ordering.every((nodeId) => nodeId === 0)) {
-		edgesCopy.forEach((edge) => (edge.state = ''));
-		setShowModal({
-			text: 'Not Possible! Cycle!',
-		});
-		setViewVisited([]);
-		setViewDead([]);
-		setEdges([...edgesCopy]);
-	} else {
-		setPath(ordering);
-		setShowModal({
-			text: ordering.toString().split(',').join('-'),
-			confirm: true,
-		});
-	}
+	setPath(ordering);
+	setShowModal({
+		text: ordering.toString().split(',').join('-'),
+		confirm: true,
+	});
 }

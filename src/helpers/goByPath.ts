@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction } from 'react';
+import sleep from 'sleep-promise';
 import { IEdge } from '../types';
-export default function goByPath(
+export default async function goByPath(
 	path: number[],
 	length: number,
 	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
@@ -18,7 +19,7 @@ export default function goByPath(
 
 	const visited = new Array(length).fill(false);
 	let i = 0;
-	const loop = setInterval(() => {
+	while (i < path.length) {
 		visited[path[i] - 1] = true;
 		edgesCopy.map((edge) => {
 			if (
@@ -38,9 +39,6 @@ export default function goByPath(
 		setEdges([...edgesCopy]);
 		setViewVisited([...visited]);
 		i++;
-
-		if (i === path.length) {
-			clearInterval(loop);
-		}
-	}, speed);
+		await sleep(speed);
+	}
 }

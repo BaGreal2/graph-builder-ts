@@ -81,8 +81,8 @@ function App() {
 						text={showModal.text}
 						onModalClose={() => onModalClose()}
 						confirmText="Show Path"
-						onConfirm={() => {
-							goByPath(
+						onConfirm={async () => {
+							await goByPath(
 								path,
 								nodes.length,
 								setViewVisited,
