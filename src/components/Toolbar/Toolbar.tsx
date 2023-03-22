@@ -6,7 +6,7 @@ import {
 	useEffect,
 	useState,
 } from 'react';
-import { eulerianPath, topSort } from '../../algorithms';
+import { eulerianPath, findBridges, topSort } from '../../algorithms';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -361,6 +361,52 @@ function Toolbar({
 										);
 									},
 									tooltip: `Topological Sort`,
+								},
+								{
+									text: 'Bridges',
+									func: async () => {
+										const nodesCopy = JSON.parse(JSON.stringify(nodes));
+										setMode!(ModeValues.ALGORITHM);
+										onAlgorithmMode(AlgorithmValues.BRIDGES);
+										const bridges = await findBridges(
+											nodesCopy,
+											setViewVisited,
+											setViewDead,
+											edges,
+											setEdges,
+											algorithmSpeed
+										);
+
+										let count = 0;
+										const formatedBridges = [...bridges]
+											.reverse()
+											.toString()
+											.replace(/,/g, () => {
+												count++;
+												return count % 2 === 0 ? ', ' : '-';
+											});
+
+										setViewDead([]);
+										setViewVisited([]);
+										const edgesCopy = [...edges];
+										edgesCopy.forEach((edge) => {
+											edge.state = '';
+											bridges.forEach((bridge) => {
+												if (
+													(edge.from === bridge[0] && edge.to === bridge[1]) ||
+													(edge.from === bridge[1] && edge.to === bridge[0])
+												) {
+													edge.state = 'visited';
+												}
+											});
+										});
+										setEdges([...edgesCopy]);
+
+										setShowModal({
+											text: 'Found bridges: ' + formatedBridges,
+										});
+									},
+									tooltip: `Find Bridges`,
 								},
 							]}
 						/>

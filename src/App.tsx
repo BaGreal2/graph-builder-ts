@@ -38,6 +38,10 @@ function App() {
 		setViewVisited([]);
 		setViewDead([]);
 		setShowModal({ text: '' });
+		const edgesCopy = edges.slice();
+		edgesCopy.forEach((edge) => (edge.state = ''));
+		setEdges(edgesCopy.slice());
+
 		// checkng if node exist on click spot or other mods enabled
 		if (
 			nodes.some((node) => {
