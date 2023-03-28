@@ -32,12 +32,16 @@ function App() {
 		confirm?: boolean;
 	}>({ text: '' });
 	const [algorithmSpeed, setAlgorithmSpeed] = useState<number>(150);
+	const [additionalNums, setAdditionalNums] = useState<
+		[number | null, number | null][]
+	>([]);
 
 	// creating node on field click
 	function onCreateNode(e: MouseEvent) {
 		setViewVisited([]);
 		setViewDead([]);
 		setShowModal({ text: '' });
+		setAdditionalNums([]);
 		const edgesCopy = edges.slice();
 		edgesCopy.forEach((edge) => (edge.state = ''));
 		setEdges(edgesCopy.slice());
@@ -72,6 +76,7 @@ function App() {
 		setViewDead([]);
 		setViewVisited([]);
 		setPath([]);
+		setAdditionalNums([]);
 		const edgesCopy = [...edges];
 		edgesCopy.map((edge) => (edge.state = ''));
 		setEdges([...edgesCopy]);
@@ -120,6 +125,7 @@ function App() {
 				setShowModal={setShowModal}
 				algorithmSpeed={algorithmSpeed}
 				setAlgorithmSpeed={setAlgorithmSpeed}
+				setAdditionalNums={setAdditionalNums}
 			/>
 			<Stage
 				width={window.innerWidth - 50}
@@ -159,6 +165,7 @@ function App() {
 								algorithm={algorithm}
 								setShowModal={setShowModal}
 								algorithmSpeed={algorithmSpeed}
+								additionalNum={additionalNums[id]}
 							/>
 						);
 					})}

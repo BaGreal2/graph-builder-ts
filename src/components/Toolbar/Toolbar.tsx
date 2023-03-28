@@ -56,6 +56,7 @@ interface ToolbarProps {
 	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>;
 	algorithmSpeed: number;
 	setAlgorithmSpeed: Dispatch<SetStateAction<number>>;
+	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>;
 }
 
 function Toolbar({
@@ -77,6 +78,7 @@ function Toolbar({
 	setShowModal,
 	algorithmSpeed,
 	setAlgorithmSpeed,
+	setAdditionalNums,
 }: ToolbarProps) {
 	// setting toolbar states
 	const [showChoiceColor, setShowChoiceColor] = useState<boolean>(false);
@@ -368,13 +370,14 @@ function Toolbar({
 										const nodesCopy = JSON.parse(JSON.stringify(nodes));
 										setMode!(ModeValues.ALGORITHM);
 										onAlgorithmMode(AlgorithmValues.BRIDGES);
-										const bridges = await findBridges(
+										const [bridges, additionalNums] = await findBridges(
 											nodesCopy,
 											setViewVisited,
 											setViewDead,
 											edges,
 											setEdges,
-											algorithmSpeed
+											algorithmSpeed,
+											setAdditionalNums
 										);
 
 										let count = 0;
@@ -401,6 +404,18 @@ function Toolbar({
 											});
 										});
 										setEdges([...edgesCopy]);
+
+										const visited = new Array(nodes.length).fill(false);
+										additionalNums.forEach((node, i) => {
+											if (node[0] === 1) {
+												return;
+											}
+											if (node[0] === node[1]) {
+												visited[i] = true;
+											}
+										});
+
+										setViewVisited(visited.slice());
 
 										setShowModal({
 											text: 'Found bridges: ' + formatedBridges,

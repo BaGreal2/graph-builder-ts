@@ -1,6 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import { IEdge, INode } from '../types';
 import sleep from 'sleep-promise';
+import { IEdge, INode } from '../types';
 
 export default async function findBridges(
 	nodes: INode[],
@@ -8,13 +8,16 @@ export default async function findBridges(
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
 	edges: IEdge[],
 	setEdges: Dispatch<SetStateAction<IEdge[]>>,
-	speed: number
-): Promise<[number, number][]> {
+	speed: number,
+	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>
+): Promise<[[number, number][], [number | null, number | null][]]> {
 	setViewDead([]);
 	setViewVisited([]);
+	setAdditionalNums([]);
 
 	const visited = new Array(nodes.length).fill(false);
 	const deadEnds = new Array(nodes.length).fill(false);
+	const additionalNums = new Array(nodes.length).fill([null, null]);
 	const tin = new Array(nodes.length).fill(-1);
 	const low = new Array(nodes.length).fill(-1);
 	const bridges: [number, number][] = [];
@@ -37,11 +40,13 @@ export default async function findBridges(
 				setViewDead,
 				edgesCopy,
 				setEdges,
-				speed
+				speed,
+				additionalNums,
+				setAdditionalNums
 			);
 		}
 	}
-	return bridges;
+	return [bridges, additionalNums];
 }
 
 async function dfs(
@@ -57,7 +62,9 @@ async function dfs(
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
 	edges: IEdge[],
 	setEdges: Dispatch<SetStateAction<IEdge[]>>,
-	speed: number
+	speed: number,
+	additionalNums: [number | null, number | null][],
+	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>
 ) {
 	const stack: [INode, null | INode][] = [[startNode, null]];
 	let foundIndexGlobal: number;
@@ -72,6 +79,12 @@ async function dfs(
 			timer.value++;
 			tin[curr.index - 1] = timer.value;
 			low[curr.index - 1] = timer.value;
+
+			additionalNums[curr.index - 1] = [
+				JSON.parse(JSON.stringify(timer.value)),
+				JSON.parse(JSON.stringify(timer.value)),
+			];
+			setAdditionalNums(additionalNums.slice());
 
 			let foundIndexCurr: number;
 
@@ -90,6 +103,11 @@ async function dfs(
 						low[curr.index - 1],
 						tin[connection[0] - 1]
 					);
+					additionalNums[curr.index - 1] = [
+						JSON.parse(JSON.stringify(additionalNums[curr.index - 1][0])),
+						Math.min(low[curr.index - 1], tin[connection[0] - 1]),
+					];
+					setAdditionalNums(additionalNums.slice());
 				}
 			}
 
@@ -116,6 +134,11 @@ async function dfs(
 						low[curr.index - 1],
 						low[connection[0] - 1]
 					);
+					additionalNums[curr.index - 1] = [
+						JSON.parse(JSON.stringify(additionalNums[curr.index - 1][0])),
+						Math.min(low[curr.index - 1], low[connection[0] - 1]),
+					];
+					setAdditionalNums(additionalNums.slice());
 					if (low[connection[0] - 1] > tin[curr.index - 1]) {
 						bridges.push([curr.index, connection[0]]);
 					}
@@ -151,6 +174,12 @@ async function dfs(
 							low[curr.index - 1],
 							tin[connection[0] - 1]
 						);
+						additionalNums[curr.index - 1] = [
+							JSON.parse(JSON.stringify(additionalNums[curr.index - 1][0])),
+							Math.min(low[curr.index - 1], tin[connection[0] - 1]),
+						];
+
+						// setAdditionalNums(additionalNums.slice());
 					}
 				}
 			}

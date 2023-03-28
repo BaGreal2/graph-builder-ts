@@ -27,6 +27,7 @@ interface NodeProps {
 		}>
 	>;
 	algorithmSpeed: number;
+	additionalNum: [number | null, number | null];
 }
 
 function Node({
@@ -45,6 +46,7 @@ function Node({
 	algorithm,
 	setShowModal,
 	algorithmSpeed,
+	additionalNum,
 }: NodeProps) {
 	// destructing node
 	const { index, x, y, radius } = node;
@@ -232,6 +234,24 @@ function Node({
 				fill={countColor(nodesColor, textColorDiff)}
 				text={index.toString()}
 			/>
+			{!!additionalNum && !!additionalNum[0] && (
+				<Text
+					x={-radius * 2}
+					y={-radius}
+					fontSize={14}
+					fill={countColor(nodesColor, textColorDiff)}
+					text={`${additionalNum[0]}/`}
+				/>
+			)}
+			{!!additionalNum && !!additionalNum[1] && (
+				<Text
+					x={-radius * 2 + 11}
+					y={-radius}
+					fontSize={14}
+					fill={countColor(nodesColor, textColorDiff)}
+					text={`${additionalNum[1]}`}
+				/>
+			)}
 		</Group>
 	);
 }
