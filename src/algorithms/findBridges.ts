@@ -82,7 +82,7 @@ async function dfs(
 
 			additionalNums[curr.index - 1] = [
 				JSON.parse(JSON.stringify(timer.value)),
-				JSON.parse(JSON.stringify(timer.value)),
+				null,
 			];
 			setAdditionalNums(additionalNums.slice());
 

@@ -380,6 +380,13 @@ function Toolbar({
 											setAdditionalNums
 										);
 
+										if (bridges.length == 0) {
+											setShowModal({
+												text: 'No bridges found.',
+											});
+											return;
+										}
+
 										let count = 0;
 										const formatedBridges = [...bridges]
 											.reverse()
