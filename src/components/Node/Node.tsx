@@ -2,7 +2,8 @@ import Konva from 'konva';
 import { Dispatch, SetStateAction, useContext } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { depthFirstSearch } from '../../algorithms';
-import { countColor, generateEdges } from '../../helpers';
+import breadthFirstSearch from '../../algorithms/breadthFirstSearch';
+import { countColor, drawStepsPath, generateEdges } from '../../helpers';
 import { AlgorithmValues, IEdge, INode, ModeValues } from '../../types';
 import { ModeContext } from '../ModeProvider';
 
@@ -134,18 +135,32 @@ function Node({
 	// running current algorithm
 	async function onAlgorithm() {
 		const nodesCopy = JSON.parse(JSON.stringify(nodes));
-		const visited = new Array(nodes.length).fill(false);
-		const deadEnds = new Array(nodes.length).fill(false);
+
 		switch (algorithm) {
-			case AlgorithmValues.DFS:
+			case AlgorithmValues.DFS: {
 				setViewVisited([]);
 				setViewDead([]);
+				const edgesCopy = [...edges];
+				edgesCopy.forEach((edge) => (edge.state = ''));
+				setEdges([...edgesCopy]);
 
-				await depthFirstSearch(
+				const visited = new Array(nodes.length).fill(false);
+				const deadEnds = new Array(nodes.length).fill(false);
+
+				const path = depthFirstSearch(
 					nodesCopy,
 					visited,
 					deadEnds,
-					nodes[index - 1],
+					nodes[index - 1]
+				);
+
+				const visitedP = new Array(nodes.length).fill(false);
+				const deadEndsP = new Array(nodes.length).fill(false);
+
+				await drawStepsPath(
+					path!,
+					visitedP,
+					deadEndsP,
 					setViewVisited,
 					setViewDead,
 					edges,
@@ -159,6 +174,39 @@ function Node({
 					setShowModal({ text: 'Not connected graph!' });
 				}
 				break;
+			}
+			case AlgorithmValues.BFS: {
+				setViewVisited([]);
+				setViewDead([]);
+				const edgesCopy = [...edges];
+				edgesCopy.forEach((edge) => (edge.state = ''));
+				setEdges([...edgesCopy]);
+
+				const visited = new Array(nodes.length).fill(false);
+				const deadEnds = new Array(nodes.length).fill(false);
+
+				const path = breadthFirstSearch(nodesCopy, visited, nodes[index - 1]);
+
+				const visitedP = new Array(nodes.length).fill(false);
+				const deadEndsP = new Array(nodes.length).fill(false);
+
+				await drawStepsPath(
+					path!,
+					visitedP,
+					deadEndsP,
+					setViewVisited,
+					setViewDead,
+					edges,
+					setEdges,
+					algorithmSpeed
+				);
+				if (visited.every((v) => v)) {
+					setShowModal({ text: 'Connected graph!' });
+				} else {
+					setShowModal({ text: 'Not connected graph!' });
+				}
+				break;
+			}
 			default:
 				break;
 		}

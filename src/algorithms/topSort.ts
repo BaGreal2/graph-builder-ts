@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
 import { depthFirstSearch } from '.';
+import { drawStepsPath } from '../helpers';
 import { IEdge, INode } from '../types';
 
 export default async function topSort(
@@ -15,7 +16,9 @@ export default async function topSort(
 	setViewDead([]);
 	setViewVisited([]);
 	const visited = new Array(nodes.length).fill(false);
+	let viewVisited = new Array(nodes.length).fill(false);
 	const deadEnds = new Array(nodes.length).fill(false);
+	let viewDeadEnds = new Array(nodes.length).fill(false);
 	const ordering = new Array(nodes.length).fill(0);
 	const edgesCopy = [...edges];
 
@@ -32,18 +35,28 @@ export default async function topSort(
 	for (let at = 0; at < nodes.length; at++) {
 		if (!visited[at]) {
 			const visitedNodes: number[] = [];
-			await depthFirstSearch(
+			const path = depthFirstSearch(
 				nodes,
 				visited,
 				deadEnds,
 				nodes[at],
-				setViewVisited,
-				setViewDead,
-				edgesCopy,
-				setEdges,
-				speed,
 				visitedNodes
 			);
+
+			if (path) {
+				await drawStepsPath(
+					path,
+					viewVisited,
+					viewDeadEnds,
+					setViewVisited,
+					setViewDead,
+					edgesCopy,
+					setEdges,
+					speed
+				);
+			}
+			viewVisited = [...visited];
+			viewDeadEnds = [...deadEnds];
 
 			if (visitedNodes.length === 0) {
 				edgesCopy.forEach((edge) => (edge.state = ''));

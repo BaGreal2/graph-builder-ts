@@ -1,20 +1,14 @@
-import { Dispatch, SetStateAction } from 'react';
-import { IEdge, INode } from '../types';
-import sleep from 'sleep-promise';
+import { INode, IStep } from '../types';
 
-export default async function depthFirstSearch(
+export default function depthFirstSearch(
 	nodes: INode[],
 	visited: boolean[],
 	deadEnds: boolean[],
 	startNode: INode,
-	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
-	setViewDead: Dispatch<SetStateAction<boolean[]>>,
-	edges: IEdge[],
-	setEdges: Dispatch<SetStateAction<IEdge[]>>,
-	speed: number,
 	visitedNodes?: number[]
 ) {
 	const stack = [startNode];
+	const stepPath: IStep[] = [];
 	const pathVisited = new Array(nodes.length).fill(false);
 	let foundIndexGlobal: number;
 
@@ -26,8 +20,13 @@ export default async function depthFirstSearch(
 		if (!visited[curr.index - 1]) {
 			visited[curr.index - 1] = true;
 			pathVisited[curr.index - 1] = true;
-			setViewVisited([...visited]);
+			stepPath.push({
+				stepType: 'node',
+				nodeIndex: curr.index,
+				state: 'visited',
+			});
 
+			// check: if works
 			let foundIndexCurr: number;
 
 			for (const connection of curr.connections) {
@@ -40,17 +39,21 @@ export default async function depthFirstSearch(
 					return;
 				}
 			}
-			edges.map((edge) => {
-				if (
-					(edge.from === curr.index && edge.to === foundIndexCurr) ||
-					(edge.to === curr.index && edge.from === foundIndexCurr) ||
-					(edge.from === curr.index && edge.to === foundIndexGlobal) ||
-					(edge.to === curr.index && edge.from === foundIndexGlobal)
-				) {
-					edge.state = 'visited';
-				}
-			});
-			setEdges([...edges]);
+
+			if (foundIndexCurr!) {
+				stepPath.push({
+					stepType: 'edge',
+					edgeIndexes: [curr.index, foundIndexCurr!],
+					state: 'visited',
+				});
+			}
+			if (foundIndexGlobal!) {
+				stepPath.push({
+					stepType: 'edge',
+					edgeIndexes: [curr.index, foundIndexGlobal!],
+					state: 'visited',
+				});
+			}
 		} else {
 			// if all connected edges are visited -> dead end
 			if (curr.connections.every((connection) => visited[connection[0] - 1])) {
@@ -61,20 +64,18 @@ export default async function depthFirstSearch(
 						visitedNodes.push(curr.index);
 					}
 				}
-				setViewDead([...deadEnds]);
-				stack.pop();
 
-				edges.map((edge) => {
-					if (
-						(edge.from === curr.index &&
-							edge.to === stack[stack.length - 1]?.index) ||
-						(edge.to === curr.index &&
-							edge.from === stack[stack.length - 1]?.index)
-					) {
-						edge.state = 'dead-end';
-					}
+				stepPath.push({
+					stepType: 'node',
+					nodeIndex: curr.index,
+					state: 'dead-end',
 				});
-				setEdges([...edges]);
+				stack.pop();
+				stepPath.push({
+					stepType: 'edge',
+					edgeIndexes: [curr.index, stack[stack.length - 1]?.index],
+					state: 'dead-end',
+				});
 			} else {
 				// if there are unvisited neibours -> push to stack first of them
 				for (const connection of curr.connections) {
@@ -86,6 +87,6 @@ export default async function depthFirstSearch(
 				}
 			}
 		}
-		await sleep(speed);
 	}
+	return stepPath;
 }

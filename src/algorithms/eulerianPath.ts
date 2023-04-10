@@ -1,25 +1,11 @@
-import { Dispatch, SetStateAction } from 'react';
-import sleep from 'sleep-promise';
 import isGraphConnected from '../helpers/isGraphConnected';
-import { IEdge, INode } from '../types';
+import { INode, IStep } from '../types';
 
-export default async function eulerianPath(
-	nodes: INode[],
-	setViewVisited: Dispatch<SetStateAction<boolean[]>>,
-	setViewDead: Dispatch<SetStateAction<boolean[]>>,
-	setPath: Dispatch<SetStateAction<number[]>>,
-	edges: IEdge[],
-	setEdges: Dispatch<SetStateAction<IEdge[]>>,
-	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>,
-	speed: number
-) {
-	setViewDead([]);
-	setViewVisited([]);
-
+export default function eulerianPath(nodes: INode[]): [number[], IStep[]] {
 	const visited = new Array(nodes.length).fill(false);
 	const deadEnds = new Array(nodes.length).fill(false);
 	const path: number[] = [];
-	const edgesCopy = [...edges];
+	const stepPath: IStep[] = [];
 
 	let startNode =
 		nodes.find((node) => node.connections.length % 2 !== 0) || null;
@@ -37,8 +23,7 @@ export default async function eulerianPath(
 		(amountOfOdd !== 2 && amountOfOdd !== 0) ||
 		!isGraphConnected(nodes, nodes[0])
 	) {
-		setShowModal({ text: 'Not possible to find path!' });
-		return;
+		return [[], []];
 	}
 	const stack: INode[] = [startNode!];
 
@@ -50,24 +35,23 @@ export default async function eulerianPath(
 			// if dead end -> go back in stack and push index from stack to path arr
 			const elem = stack.pop();
 			if (!elem) {
-				return;
+				return [path, stepPath];
 			}
 			path.push(elem.index);
 
 			// setting dead-end state
-			edgesCopy.map((edge) => {
-				if (
-					(edge.from === curr.index &&
-						edge.to === stack[stack.length - 1]?.index) ||
-					(edge.to === curr.index &&
-						edge.from === stack[stack.length - 1]?.index)
-				) {
-					edge.state = 'dead-end';
-				}
+
+			stepPath.push({
+				stepType: 'node',
+				nodeIndex: curr.index,
+				state: 'dead-end',
+			});
+			stepPath.push({
+				stepType: 'edge',
+				edgeIndexes: [curr.index, stack[stack.length - 1]?.index],
+				state: 'dead-end',
 			});
 			deadEnds[curr.index - 1] = true;
-			setEdges([...edgesCopy]);
-			setViewDead([...deadEnds]);
 		} else {
 			// finding connection with minimal index
 			const minConnection = curr.connections.reduce((min, connection) =>
@@ -84,30 +68,23 @@ export default async function eulerianPath(
 			nodes[indexOfMin].connections.splice(connectionToIndex, 1);
 
 			// setting visited node state
-			edgesCopy.map((edge) => {
-				if (
-					(edge.from === curr.index && edge.to === indexOfMin + 1) ||
-					(edge.to === curr.index && edge.from === indexOfMin + 1)
-				) {
-					edge.state = 'visited';
-				}
-			});
+
 			visited[curr.index - 1] = true;
-			setEdges([...edgesCopy]);
-			setViewVisited([...visited]);
+			stepPath.push({
+				stepType: 'node',
+				nodeIndex: curr.index,
+				state: 'visited',
+			});
+
+			stepPath.push({
+				stepType: 'edge',
+				edgeIndexes: [curr.index, indexOfMin + 1],
+				state: 'visited',
+			});
 			// pushing node with min index to stack
 			stack.push(nodes[indexOfMin]);
 		}
-		await sleep(speed);
 	}
 
-	setPath([...path].reverse());
-	let throwText = [...path].reverse().toString().split(',').join('-');
-	if (path[path.length - 1] === path[0]) {
-		throwText += ' cycle!';
-	}
-	setShowModal({
-		text: throwText,
-		confirm: true,
-	});
+	return [path, stepPath];
 }

@@ -19,7 +19,7 @@ import {
 	PointerIcon,
 	TrashIcon,
 } from '../../assets/icons';
-import { generateEdges } from '../../helpers';
+import { drawStepsPath, generateEdges } from '../../helpers';
 import {
 	AlgorithmValues,
 	IColor,
@@ -172,6 +172,7 @@ function Toolbar({
 		const edgesCopy = [...edges];
 		edgesCopy.forEach((edge) => (edge.state = ''));
 		setEdges([...edgesCopy]);
+		console.log('smth');
 	}
 
 	// setting algorithm
@@ -257,6 +258,121 @@ function Toolbar({
 		}
 	}
 
+	async function onEPath() {
+		const nodesCopy = JSON.parse(JSON.stringify(nodes));
+		const visited = new Array(nodes.length).fill(false);
+		const deadEnds = new Array(nodes.length).fill(false);
+		setMode!(ModeValues.ALGORITHM);
+		onAlgorithmMode(AlgorithmValues.EULERIANPATH);
+		setViewDead([]);
+		setViewVisited([]);
+		const [ePath, stepPath] = eulerianPath(nodesCopy);
+
+		await drawStepsPath(
+			stepPath!,
+			visited,
+			deadEnds,
+			setViewVisited,
+			setViewDead,
+			edges,
+			setEdges,
+			algorithmSpeed
+		);
+		if (ePath.length === 0) {
+			setShowModal({ text: 'Not possible to find path!' });
+			return;
+		}
+
+		setPath([...ePath].reverse());
+		let throwText = [...ePath].reverse().toString().split(',').join('-');
+		if (ePath[ePath.length - 1] === ePath[0]) {
+			throwText += ' cycle!';
+		}
+		setShowModal({
+			text: throwText,
+			confirm: true,
+		});
+	}
+
+	function onTopSort() {
+		const nodesCopy = JSON.parse(JSON.stringify(nodes));
+		setMode!(ModeValues.ALGORITHM);
+		onAlgorithmMode(AlgorithmValues.TOPSORT);
+		topSort(
+			nodesCopy,
+			setViewVisited,
+			setViewDead,
+			setPath,
+			setShowModal,
+			edges,
+			setEdges,
+			algorithmSpeed
+		);
+	}
+
+	async function onBridges() {
+		const nodesCopy = JSON.parse(JSON.stringify(nodes));
+		setMode!(ModeValues.ALGORITHM);
+		onAlgorithmMode(AlgorithmValues.BRIDGES);
+		const [bridges, additionalNums] = await findBridges(
+			nodesCopy,
+			setViewVisited,
+			setViewDead,
+			edges,
+			setEdges,
+			algorithmSpeed,
+			setAdditionalNums
+		);
+
+		if (bridges.length == 0) {
+			setShowModal({
+				text: 'No bridges found.',
+			});
+			return;
+		}
+
+		let count = 0;
+		const formatedBridges = [...bridges]
+			.reverse()
+			.toString()
+			.replace(/,/g, () => {
+				count++;
+				return count % 2 === 0 ? ', ' : '-';
+			});
+
+		setViewDead([]);
+		setViewVisited([]);
+		const edgesCopy = [...edges];
+		edgesCopy.forEach((edge) => {
+			edge.state = '';
+			bridges.forEach((bridge) => {
+				if (
+					(edge.from === bridge[0] && edge.to === bridge[1]) ||
+					(edge.from === bridge[1] && edge.to === bridge[0])
+				) {
+					edge.state = 'visited';
+				}
+			});
+		});
+		setEdges([...edgesCopy]);
+
+		const visited = new Array(nodes.length).fill(false);
+		additionalNums.forEach((node, i) => {
+			if (node[0] === 1) {
+				return;
+			}
+			if (node[0] === node[1]) {
+				visited[i] = true;
+			}
+		});
+
+		setViewVisited(visited.slice());
+
+		setShowModal({
+			text: 'Found bridges: ' + formatedBridges,
+		});
+	}
+
 	useEffect(() => {
 		window.addEventListener('keydown', keyPressHandler);
 
@@ -327,108 +443,26 @@ function Toolbar({
 								{
 									text: 'E Path',
 									func: async () => {
-										const nodesCopy = JSON.parse(JSON.stringify(nodes));
-										setMode!(ModeValues.ALGORITHM);
-										onAlgorithmMode(AlgorithmValues.EULERIANPATH);
-										setViewDead([]);
-										setViewVisited([]);
-										await eulerianPath(
-											nodesCopy,
-											setViewVisited,
-											setViewDead,
-											setPath,
-											edges,
-											setEdges,
-											setShowModal,
-											algorithmSpeed
-										);
+										await onEPath();
 									},
 									tooltip: `Eulerian Path`,
 								},
 								{
 									text: 'TopSort',
-									func: () => {
-										const nodesCopy = JSON.parse(JSON.stringify(nodes));
-										setMode!(ModeValues.ALGORITHM);
-										onAlgorithmMode(AlgorithmValues.TOPSORT);
-										topSort(
-											nodesCopy,
-											setViewVisited,
-											setViewDead,
-											setPath,
-											setShowModal,
-											edges,
-											setEdges,
-											algorithmSpeed
-										);
-									},
+									func: onTopSort,
 									tooltip: `Topological Sort`,
 								},
 								{
 									text: 'Bridges',
 									func: async () => {
-										const nodesCopy = JSON.parse(JSON.stringify(nodes));
-										setMode!(ModeValues.ALGORITHM);
-										onAlgorithmMode(AlgorithmValues.BRIDGES);
-										const [bridges, additionalNums] = await findBridges(
-											nodesCopy,
-											setViewVisited,
-											setViewDead,
-											edges,
-											setEdges,
-											algorithmSpeed,
-											setAdditionalNums
-										);
-
-										if (bridges.length == 0) {
-											setShowModal({
-												text: 'No bridges found.',
-											});
-											return;
-										}
-
-										let count = 0;
-										const formatedBridges = [...bridges]
-											.reverse()
-											.toString()
-											.replace(/,/g, () => {
-												count++;
-												return count % 2 === 0 ? ', ' : '-';
-											});
-
-										setViewDead([]);
-										setViewVisited([]);
-										const edgesCopy = [...edges];
-										edgesCopy.forEach((edge) => {
-											edge.state = '';
-											bridges.forEach((bridge) => {
-												if (
-													(edge.from === bridge[0] && edge.to === bridge[1]) ||
-													(edge.from === bridge[1] && edge.to === bridge[0])
-												) {
-													edge.state = 'visited';
-												}
-											});
-										});
-										setEdges([...edgesCopy]);
-
-										const visited = new Array(nodes.length).fill(false);
-										additionalNums.forEach((node, i) => {
-											if (node[0] === 1) {
-												return;
-											}
-											if (node[0] === node[1]) {
-												visited[i] = true;
-											}
-										});
-
-										setViewVisited(visited.slice());
-
-										setShowModal({
-											text: 'Found bridges: ' + formatedBridges,
-										});
+										await onBridges();
 									},
 									tooltip: `Find Bridges`,
+								},
+								{
+									text: 'BFS',
+									func: () => onAlgorithmMode(AlgorithmValues.BFS),
+									tooltip: 'Breadth First Search',
 								},
 							]}
 						/>
