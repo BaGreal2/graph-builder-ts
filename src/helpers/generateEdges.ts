@@ -15,9 +15,9 @@ export default function generateEdges(
 				return;
 			}
 			const index1 =
-				node1.connections.length > 0 ? node1.connections.length : 1;
+				node1.connections.length > 0 ? node1.connections.length - 1 : 0;
 			const index2 =
-				node2.connections.length > 0 ? node2.connections.length : 1;
+				node1.connections.length > 0 ? node2.connections.length - 1 : 0;
 
 			let thisType: 'direct' | 'undirect' = 'direct';
 			if (

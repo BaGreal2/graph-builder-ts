@@ -5,6 +5,7 @@ enum AlgorithmValues {
 	TOPSORT,
 	BRIDGES,
 	NONE,
+	DIJKSTRA,
 }
 
 export default AlgorithmValues;

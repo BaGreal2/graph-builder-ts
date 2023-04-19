@@ -6,8 +6,8 @@ export default function breadthFirstSearch(
 	startNode: INode
 ) {
 	const queue = [startNode];
-	// const deadEnds = new Array(nodes.length).fill(false);
 	const stepPath: IStep[] = [];
+	const prev: INode[] = new Array(nodes.length);
 
 	visited[startNode.index - 1] = true;
 	stepPath.push({
@@ -17,10 +17,12 @@ export default function breadthFirstSearch(
 	});
 
 	while (queue.length > 0) {
-		const curr = queue.pop();
-		for (const connection of curr!.connections) {
+		const curr = queue.pop()!;
+
+		for (const connection of curr.connections) {
 			if (!visited[connection[0] - 1]) {
 				visited[connection[0] - 1] = true;
+				prev[connection[0] - 1] = curr;
 
 				stepPath.push(
 					{
@@ -36,6 +38,23 @@ export default function breadthFirstSearch(
 				);
 
 				queue.unshift(nodes[connection[0] - 1]);
+			}
+
+			if (
+				curr.connections.every((connectionIn) => visited[connectionIn[0] - 1])
+			) {
+				if (prev[curr.index - 1]) {
+					stepPath.push({
+						stepType: 'edge',
+						edgeIndexes: [prev[curr.index - 1].index, curr.index],
+						state: 'dead-end',
+					});
+				}
+				stepPath.push({
+					stepType: 'node',
+					nodeIndex: curr.index,
+					state: 'dead-end',
+				});
 			}
 		}
 	}

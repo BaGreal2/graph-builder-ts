@@ -1,9 +1,14 @@
 import Konva from 'konva';
-import { Dispatch, SetStateAction, useContext } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { Circle, Group, Text } from 'react-konva';
-import { depthFirstSearch } from '../../algorithms';
+import { depthFirstSearch, dijkstra } from '../../algorithms';
 import breadthFirstSearch from '../../algorithms/breadthFirstSearch';
-import { countColor, drawStepsPath, generateEdges } from '../../helpers';
+import {
+	countColor,
+	drawStepsPath,
+	generateEdges,
+	goByPath,
+} from '../../helpers';
 import { AlgorithmValues, IEdge, INode, ModeValues } from '../../types';
 import { ModeContext } from '../ModeProvider';
 
@@ -29,6 +34,10 @@ interface NodeProps {
 	>;
 	algorithmSpeed: number;
 	additionalNum: [number | null, number | null];
+	additionalNums: [number | null, number | null][];
+	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>;
+	firstNode: INode | null;
+	setFirstNode: Dispatch<SetStateAction<INode | null>>;
 }
 
 function Node({
@@ -48,6 +57,10 @@ function Node({
 	setShowModal,
 	algorithmSpeed,
 	additionalNum,
+	additionalNums,
+	setAdditionalNums,
+	firstNode,
+	setFirstNode,
 }: NodeProps) {
 	// destructing node
 	const { index, x, y, radius } = node;
@@ -165,6 +178,8 @@ function Node({
 					setViewDead,
 					edges,
 					setEdges,
+					additionalNums,
+					setAdditionalNums,
 					algorithmSpeed
 				);
 
@@ -183,7 +198,6 @@ function Node({
 				setEdges([...edgesCopy]);
 
 				const visited = new Array(nodes.length).fill(false);
-				const deadEnds = new Array(nodes.length).fill(false);
 
 				const path = breadthFirstSearch(nodesCopy, visited, nodes[index - 1]);
 
@@ -198,12 +212,70 @@ function Node({
 					setViewDead,
 					edges,
 					setEdges,
+					additionalNums,
+					setAdditionalNums,
 					algorithmSpeed
 				);
 				if (visited.every((v) => v)) {
 					setShowModal({ text: 'Connected graph!' });
 				} else {
 					setShowModal({ text: 'Not connected graph!' });
+				}
+				break;
+			}
+			case AlgorithmValues.DIJKSTRA: {
+				const nodesSelectedCopy = nodesSelected.slice();
+				if (!firstNode) {
+					setFirstNode(node);
+					nodesSelectedCopy.push(node);
+
+					setNodesSelected(nodesSelectedCopy.slice());
+				} else {
+					if (node.index === firstNode.index) {
+						return;
+					}
+
+					nodesSelectedCopy.push(node);
+					setNodesSelected(nodesSelectedCopy.slice());
+
+					setViewVisited([]);
+					setViewDead([]);
+					const [prevPath, dist, stepPath] = dijkstra(
+						nodesCopy,
+						firstNode,
+						node
+					);
+					const visited = new Array(nodes.length).fill(false);
+					const deadEnds = new Array(nodes.length).fill(false);
+
+					await drawStepsPath(
+						stepPath!,
+						visited,
+						deadEnds,
+						setViewVisited,
+						setViewDead,
+						edges,
+						setEdges,
+						additionalNums,
+						setAdditionalNums,
+						algorithmSpeed
+					);
+
+					await goByPath(
+						prevPath,
+						prevPath.length,
+						setViewVisited,
+						setViewDead,
+						edges,
+						setEdges,
+						false,
+						algorithmSpeed
+					);
+
+					setShowModal({
+						text: `Shortest path to ${node.index}: ${dist}`,
+					});
+					setFirstNode(null);
 				}
 				break;
 			}
@@ -288,7 +360,7 @@ function Node({
 					y={-radius}
 					fontSize={14}
 					fill={countColor(nodesColor, textColorDiff)}
-					text={`${additionalNum[0]}/`}
+					text={`${additionalNum[0]}${additionalNum[1] ? '/' : ''}`}
 				/>
 			)}
 			{!!additionalNum && !!additionalNum[1] && (

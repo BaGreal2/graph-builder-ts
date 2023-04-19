@@ -6,7 +6,7 @@ import {
 	useEffect,
 	useState,
 } from 'react';
-import { eulerianPath, findBridges, topSort } from '../../algorithms';
+import { eulerianPath, findBridges, topSort, dijkstra } from '../../algorithms';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -56,6 +56,7 @@ interface ToolbarProps {
 	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>;
 	algorithmSpeed: number;
 	setAlgorithmSpeed: Dispatch<SetStateAction<number>>;
+	additionalNums: [number | null, number | null][];
 	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>;
 }
 
@@ -78,6 +79,7 @@ function Toolbar({
 	setShowModal,
 	algorithmSpeed,
 	setAlgorithmSpeed,
+	additionalNums,
 	setAdditionalNums,
 }: ToolbarProps) {
 	// setting toolbar states
@@ -172,7 +174,6 @@ function Toolbar({
 		const edgesCopy = [...edges];
 		edgesCopy.forEach((edge) => (edge.state = ''));
 		setEdges([...edgesCopy]);
-		console.log('smth');
 	}
 
 	// setting algorithm
@@ -276,6 +277,8 @@ function Toolbar({
 			setViewDead,
 			edges,
 			setEdges,
+			additionalNums,
+			setAdditionalNums,
 			algorithmSpeed
 		);
 		if (ePath.length === 0) {
@@ -314,7 +317,7 @@ function Toolbar({
 		const nodesCopy = JSON.parse(JSON.stringify(nodes));
 		setMode!(ModeValues.ALGORITHM);
 		onAlgorithmMode(AlgorithmValues.BRIDGES);
-		const [bridges, additionalNums] = await findBridges(
+		const [bridges, additionalNumsBridges] = await findBridges(
 			nodesCopy,
 			setViewVisited,
 			setViewDead,
@@ -357,7 +360,7 @@ function Toolbar({
 		setEdges([...edgesCopy]);
 
 		const visited = new Array(nodes.length).fill(false);
-		additionalNums.forEach((node, i) => {
+		additionalNumsBridges.forEach((node, i) => {
 			if (node[0] === 1) {
 				return;
 			}
@@ -371,6 +374,11 @@ function Toolbar({
 		setShowModal({
 			text: 'Found bridges: ' + formatedBridges,
 		});
+	}
+
+	async function onDijkstra() {
+		setMode!(ModeValues.ALGORITHM);
+		onAlgorithmMode(AlgorithmValues.DIJKSTRA);
 	}
 
 	useEffect(() => {
@@ -463,6 +471,11 @@ function Toolbar({
 									text: 'BFS',
 									func: () => onAlgorithmMode(AlgorithmValues.BFS),
 									tooltip: 'Breadth First Search',
+								},
+								{
+									text: 'Dijkstra',
+									func: () => onDijkstra(),
+									tooltip: 'Dijkstra',
 								},
 							]}
 						/>

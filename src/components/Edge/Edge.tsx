@@ -40,7 +40,7 @@ function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 	function addWeight() {
 		const nodesCopy: INode[] = [...nodes];
 		const userWeight = prompt('Enter weight:');
-		let weight = null;
+		let weight: number | null = null;
 
 		if (isNaN(Number(userWeight))) {
 			alert('Enter a valid number!');
@@ -50,14 +50,16 @@ function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 			weight = Number(userWeight);
 		}
 
-		nodesCopy[from - 1].connections[index1 - 1][1] = weight;
-
-		if (
-			nodesCopy[to - 1].connections[index2 - 1] &&
-			nodesCopy[to - 1].connections[index2 - 1][0] === from
-		) {
-			nodesCopy[to - 1].connections[index2 - 1][1] = weight;
-		}
+		nodesCopy[from - 1].connections.forEach((connection) => {
+			if (connection[0] === to) {
+				connection[1] = weight;
+			}
+		});
+		nodesCopy[to - 1].connections.forEach((connection) => {
+			if (connection[0] === from) {
+				connection[1] = weight;
+			}
+		});
 
 		setWeightCurr(userWeight);
 		setNodes([...nodesCopy]);

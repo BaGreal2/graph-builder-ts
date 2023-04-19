@@ -10,8 +10,11 @@ export default async function drawStepsPath(
 	setViewDead: Dispatch<SetStateAction<boolean[]>>,
 	edges: IEdge[],
 	setEdges: Dispatch<SetStateAction<IEdge[]>>,
+	additionalNums: [number | null, number | null][],
+	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>,
 	speed: number
 ) {
+	const additionalNumsCopy = additionalNums.slice();
 	for (const step of path) {
 		const state = step.state;
 
@@ -19,7 +22,6 @@ export default async function drawStepsPath(
 			case 'edge': {
 				const startIndex = step.edgeIndexes[0];
 				const endIndex = step.edgeIndexes[1];
-				console.log(startIndex, endIndex);
 				edges.map((edge) => {
 					if (
 						(edge.from === startIndex && edge.to === endIndex) ||
@@ -29,6 +31,7 @@ export default async function drawStepsPath(
 					}
 				});
 				setEdges([...edges]);
+				await sleep(speed);
 				break;
 			}
 			case 'node': {
@@ -40,9 +43,15 @@ export default async function drawStepsPath(
 					deadEnds[nodeIndex] = true;
 					setViewDead([...deadEnds]);
 				}
+				await sleep(speed);
 				break;
 			}
+			case 'number': {
+				const nodeIndex = step.nodeIndex - 1;
+				additionalNumsCopy[nodeIndex] = [step.numberValue, null];
+
+				setAdditionalNums([...additionalNumsCopy]);
+			}
 		}
-		await sleep(speed);
 	}
 }
