@@ -24,6 +24,14 @@ export default function dijkstra(
 
 		path.push(
 			{
+				stepType: 'edge',
+				edgeIndexes: [
+					prev[curr.index - 1][prev[curr.index - 1].length - 1],
+					curr.index,
+				],
+				state: 'visited',
+			},
+			{
 				stepType: 'node',
 				nodeIndex: curr.index,
 				state: 'visited',
@@ -59,8 +67,6 @@ export default function dijkstra(
 			}
 		}
 	}
-
-	console.log(startNode.index, endNode.index, dist);
 
 	return [
 		[...prev[endNode.index - 1], endNode.index],
