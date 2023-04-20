@@ -28,8 +28,6 @@ export default function generateEdges(
 				thisType = 'undirect';
 			}
 
-			console.log(connection[1]);
-
 			const newEdge = {
 				from: node1.index,
 				to: node2.index,

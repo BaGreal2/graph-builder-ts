@@ -1,4 +1,4 @@
-type StepType = 'node' | 'number' | 'edge';
+type StepType = 'node' | 'number' | 'numberSecond' | 'edge';
 
 type StepMap = {
 	node: {
@@ -6,6 +6,11 @@ type StepMap = {
 		state: '' | 'visited' | 'dead-end';
 	};
 	number: {
+		nodeIndex: number;
+		numberValue: number;
+		state: '';
+	};
+	numberSecond: {
 		nodeIndex: number;
 		numberValue: number;
 		state: '';

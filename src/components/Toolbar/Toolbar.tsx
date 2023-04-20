@@ -277,7 +277,7 @@ function Toolbar({
 			setViewDead,
 			edges,
 			setEdges,
-			additionalNums,
+			[...additionalNums],
 			setAdditionalNums,
 			algorithmSpeed
 		);
@@ -309,7 +309,7 @@ function Toolbar({
 			setShowModal,
 			edges,
 			setEdges,
-			additionalNums,
+			[...additionalNums],
 			setAdditionalNums,
 			algorithmSpeed
 		);

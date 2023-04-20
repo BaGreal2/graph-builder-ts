@@ -14,7 +14,6 @@ export default async function drawStepsPath(
 	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>,
 	speed: number
 ) {
-	const additionalNumsCopy = additionalNums.slice();
 	for (const step of path) {
 		const state = step.state;
 
@@ -48,9 +47,17 @@ export default async function drawStepsPath(
 			}
 			case 'number': {
 				const nodeIndex = step.nodeIndex - 1;
-				additionalNumsCopy[nodeIndex] = [step.numberValue, null];
+				additionalNums[nodeIndex] = [step.numberValue, null];
 
-				setAdditionalNums([...additionalNumsCopy]);
+				setAdditionalNums([...additionalNums]);
+				break;
+			}
+			case 'numberSecond': {
+				const nodeIndex = step.nodeIndex - 1;
+				additionalNums[nodeIndex][1] = step.numberValue;
+
+				setAdditionalNums([...additionalNums]);
+				break;
 			}
 		}
 	}

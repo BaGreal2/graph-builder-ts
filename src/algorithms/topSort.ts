@@ -1,7 +1,6 @@
 import { Dispatch, SetStateAction } from 'react';
-import { depthFirstSearch } from '.';
 import { drawStepsPath } from '../helpers';
-import { IEdge, INode } from '../types';
+import { IEdge, INode, IStep } from '../types';
 
 export default async function topSort(
 	nodes: INode[],
@@ -23,6 +22,7 @@ export default async function topSort(
 	let viewDeadEnds = new Array(nodes.length).fill(false);
 	const ordering = new Array(nodes.length).fill(0);
 	const edgesCopy = [...edges];
+	const additionalNumsCopy = [...additionalNums];
 
 	if (edgesCopy.some((edge) => edge.type === 'undirect')) {
 		setShowModal({
@@ -33,32 +33,121 @@ export default async function topSort(
 	edgesCopy.forEach((edge) => (edge.state = ''));
 
 	let i = nodes.length - 1;
+	let cnt = 1;
 
 	for (let at = 0; at < nodes.length; at++) {
 		if (!visited[at]) {
-			const visitedNodes: number[] = [];
-			const path = depthFirstSearch(
-				nodes,
-				visited,
-				deadEnds,
-				nodes[at],
-				visitedNodes
+			const stack = [nodes[at]];
+			const stepPath: IStep[] = [];
+			const pathVisited = new Array(nodes.length).fill(false);
+			let visitedNodes: number[] = [];
+			let foundIndexGlobal: number;
+
+			while (stack.length > 0) {
+				const curr = stack[stack.length - 1];
+
+				if (!visited[curr.index - 1]) {
+					visited[curr.index - 1] = true;
+					pathVisited[curr.index - 1] = true;
+					stepPath.push(
+						{
+							stepType: 'node',
+							nodeIndex: curr.index,
+							state: 'visited',
+						},
+						{
+							stepType: 'number',
+							nodeIndex: curr.index,
+							numberValue: cnt,
+							state: '',
+						}
+					);
+					cnt++;
+
+					let foundIndexCurr: number;
+
+					for (const connection of curr.connections) {
+						if (!visited[connection[0] - 1]) {
+							stack.push(nodes[connection[0] - 1]);
+							foundIndexCurr = nodes[connection[0] - 1].index;
+							break;
+						} else if (pathVisited[connection[0] - 1] && visitedNodes) {
+							visitedNodes = [];
+							return;
+						}
+					}
+
+					if (foundIndexCurr!) {
+						stepPath.push({
+							stepType: 'edge',
+							edgeIndexes: [curr.index, foundIndexCurr!],
+							state: 'visited',
+						});
+					}
+					if (foundIndexGlobal!) {
+						stepPath.push({
+							stepType: 'edge',
+							edgeIndexes: [curr.index, foundIndexGlobal!],
+							state: 'visited',
+						});
+					}
+				} else {
+					if (
+						curr.connections.every((connection) => visited[connection[0] - 1])
+					) {
+						deadEnds[curr.index - 1] = true;
+						pathVisited[curr.index - 1] = false;
+						if (visitedNodes) {
+							if (!visitedNodes.includes(curr.index)) {
+								visitedNodes.push(curr.index);
+							}
+						}
+
+						stepPath.push(
+							{
+								stepType: 'node',
+								nodeIndex: curr.index,
+								state: 'dead-end',
+							},
+							{
+								stepType: 'numberSecond',
+								nodeIndex: curr.index,
+								numberValue: cnt,
+								state: '',
+							}
+						);
+						stack.pop();
+						stepPath.push({
+							stepType: 'edge',
+							edgeIndexes: [curr.index, stack[stack.length - 1]?.index],
+							state: 'dead-end',
+						});
+					} else {
+						// if there are unvisited neibours -> push to stack first of them
+						for (const connection of curr.connections) {
+							if (!visited[connection[0] - 1]) {
+								stack.push(nodes[connection[0] - 1]);
+								foundIndexGlobal = curr.index;
+								break;
+							}
+						}
+					}
+				}
+			}
+
+			await drawStepsPath(
+				stepPath,
+				viewVisited,
+				viewDeadEnds,
+				setViewVisited,
+				setViewDead,
+				edgesCopy,
+				setEdges,
+				additionalNumsCopy,
+				setAdditionalNums,
+				speed
 			);
 
-			if (path) {
-				await drawStepsPath(
-					path,
-					viewVisited,
-					viewDeadEnds,
-					setViewVisited,
-					setViewDead,
-					edgesCopy,
-					setEdges,
-					additionalNums,
-					setAdditionalNums,
-					speed
-				);
-			}
 			viewVisited = [...visited];
 			viewDeadEnds = [...deadEnds];
 

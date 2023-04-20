@@ -4,17 +4,26 @@ export default function depthFirstSearch(
 	nodes: INode[],
 	visited: boolean[],
 	deadEnds: boolean[],
-	startNode: INode,
-	visitedNodes?: number[]
+	startNode: INode
+	// visitedNodes?: number[]
 ) {
 	const stack = [startNode];
 	const stepPath: IStep[] = [];
 	const pathVisited = new Array(nodes.length).fill(false);
 	let foundIndexGlobal: number;
+	let cnt = 1;
 
 	while (stack.length > 0) {
 		// getting last node from stack
 		const curr = stack[stack.length - 1];
+
+		stepPath.push({
+			stepType: 'number',
+			nodeIndex: curr.index,
+			numberValue: cnt,
+			state: '',
+		});
+		cnt++;
 
 		// if current node is not visited -> visit and push to stack it's first neighbour
 		if (!visited[curr.index - 1]) {
@@ -34,10 +43,11 @@ export default function depthFirstSearch(
 					stack.push(nodes[connection[0] - 1]);
 					foundIndexCurr = nodes[connection[0] - 1].index;
 					break;
-				} else if (pathVisited[connection[0] - 1] && visitedNodes) {
-					visitedNodes = [];
-					return;
 				}
+				//     else if (pathVisited[connection[0] - 1] && visitedNodes) {
+				// 	visitedNodes = [];
+				// 	return;
+				// }
 			}
 
 			if (foundIndexCurr!) {
@@ -59,11 +69,11 @@ export default function depthFirstSearch(
 			if (curr.connections.every((connection) => visited[connection[0] - 1])) {
 				deadEnds[curr.index - 1] = true;
 				pathVisited[curr.index - 1] = false;
-				if (visitedNodes) {
-					if (!visitedNodes.includes(curr.index)) {
-						visitedNodes.push(curr.index);
-					}
-				}
+				// if (visitedNodes) {
+				// 	if (!visitedNodes.includes(curr.index)) {
+				// 		visitedNodes.push(curr.index);
+				// 	}
+				// }
 
 				stepPath.push({
 					stepType: 'node',

@@ -1,5 +1,5 @@
 import Konva from 'konva';
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext } from 'react';
 import { Circle, Group, Text } from 'react-konva';
 import { depthFirstSearch, dijkstra } from '../../algorithms';
 import breadthFirstSearch from '../../algorithms/breadthFirstSearch';
@@ -178,7 +178,7 @@ function Node({
 					setViewDead,
 					edges,
 					setEdges,
-					additionalNums,
+					[...additionalNums],
 					setAdditionalNums,
 					algorithmSpeed
 				);
@@ -212,7 +212,7 @@ function Node({
 					setViewDead,
 					edges,
 					setEdges,
-					additionalNums,
+					[...additionalNums],
 					setAdditionalNums,
 					algorithmSpeed
 				);
@@ -256,7 +256,7 @@ function Node({
 						setViewDead,
 						edges,
 						setEdges,
-						additionalNums,
+						[...additionalNums],
 						setAdditionalNums,
 						algorithmSpeed
 					);
