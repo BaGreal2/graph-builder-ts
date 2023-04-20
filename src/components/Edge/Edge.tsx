@@ -14,7 +14,7 @@ interface EdgeProps {
 
 function Edge({ edge, edgesColor, nodes, setNodes, setEdges }: EdgeProps) {
 	// destructing edge
-	const { from, to, index1, index2, weight, points, type, state } = edge;
+	const { from, to, weight, points, type, state } = edge;
 	// setting current weight state
 	const [weightCurr, setWeightCurr] = useState<string | null>(
 		weight ? weight.toString() : ''

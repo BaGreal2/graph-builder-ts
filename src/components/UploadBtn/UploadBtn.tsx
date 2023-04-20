@@ -54,9 +54,10 @@ function UploadBtn({
 		});
 		setFirstClick(true);
 		setNodes([...nodesNew]);
+		setEdges([]);
 		setNodesColor('#2a507e');
 		setEdgesColor('#ffffff');
-		generateEdges(nodesNew, setEdges);
+		generateEdges([...nodesNew], setEdges);
 	}
 
 	// updating states to loaded .json file
@@ -65,6 +66,7 @@ function UploadBtn({
 		const { nodesColor, edgesColor, nodes } = res;
 		setFirstClick(true);
 		setNodes([...nodes]);
+		setEdges([]);
 		setNodesColor(nodesColor);
 		setEdgesColor(edgesColor);
 		generateEdges(nodes, setEdges);

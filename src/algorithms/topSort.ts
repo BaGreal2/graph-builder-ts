@@ -11,6 +11,8 @@ export default async function topSort(
 	setShowModal: Dispatch<SetStateAction<{ text: string; confirm?: boolean }>>,
 	edges: IEdge[],
 	setEdges: Dispatch<SetStateAction<IEdge[]>>,
+	additionalNums: [number | null, number | null][],
+	setAdditionalNums: Dispatch<SetStateAction<[number | null, number | null][]>>,
 	speed: number
 ) {
 	setViewDead([]);
@@ -52,6 +54,8 @@ export default async function topSort(
 					setViewDead,
 					edgesCopy,
 					setEdges,
+					additionalNums,
+					setAdditionalNums,
 					speed
 				);
 			}

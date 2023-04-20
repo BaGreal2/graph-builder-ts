@@ -6,7 +6,7 @@ import {
 	useEffect,
 	useState,
 } from 'react';
-import { eulerianPath, findBridges, topSort, dijkstra } from '../../algorithms';
+import { eulerianPath, findBridges, topSort } from '../../algorithms';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -309,6 +309,8 @@ function Toolbar({
 			setShowModal,
 			edges,
 			setEdges,
+			additionalNums,
+			setAdditionalNums,
 			algorithmSpeed
 		);
 	}
