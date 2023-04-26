@@ -5,3 +5,5 @@ export { default as getRandomInt } from './getRandomInt';
 export { default as goByPath } from './goByPath';
 export { default as isGraphConnected } from './isGraphConnected';
 export { default as drawStepsPath } from './drawStepsPath';
+export { default as priorityQueue } from './proiorityQueue';
+export { default as DisjointSet } from './disjointSet';

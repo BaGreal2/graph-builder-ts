@@ -18,6 +18,7 @@ type StepMap = {
 	edge: {
 		edgeIndexes: [number, number];
 		state: '' | 'visited' | 'dead-end';
+		oneDirection?: true;
 	};
 };
 

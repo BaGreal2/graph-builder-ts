@@ -21,10 +21,13 @@ export default async function drawStepsPath(
 			case 'edge': {
 				const startIndex = step.edgeIndexes[0];
 				const endIndex = step.edgeIndexes[1];
+				// console.log(!step.oneDirection);
 				edges.map((edge) => {
 					if (
 						(edge.from === startIndex && edge.to === endIndex) ||
-						(edge.to === startIndex && edge.from === endIndex)
+						(edge.to === startIndex &&
+							edge.from === endIndex &&
+							!step.oneDirection)
 					) {
 						edge.state = state;
 					}

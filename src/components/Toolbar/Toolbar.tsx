@@ -7,6 +7,7 @@ import {
 	useState,
 } from 'react';
 import { eulerianPath, findBridges, topSort } from '../../algorithms';
+import kruscal from '../../algorithms/kruscal';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -19,12 +20,13 @@ import {
 	PointerIcon,
 	TrashIcon,
 } from '../../assets/icons';
-import { drawStepsPath, generateEdges } from '../../helpers';
+import { drawStepsPath, generateEdges, goByPath } from '../../helpers';
 import {
 	AlgorithmValues,
 	IColor,
 	IEdge,
 	INode,
+	IStep,
 	ModeValues,
 	TypeValues,
 } from '../../types';
@@ -378,9 +380,61 @@ function Toolbar({
 		});
 	}
 
-	async function onDijkstra() {
+	function onDijkstra() {
 		setMode!(ModeValues.ALGORITHM);
 		onAlgorithmMode(AlgorithmValues.DIJKSTRA);
+	}
+
+	async function onKruskal() {
+		setMode!(ModeValues.ALGORITHM);
+		const edgesCopy = [...edges];
+		const minSpanPath: IStep[] = [];
+		const visited: boolean[] = Array(nodes.length).fill(false);
+		const deadEnds: boolean[] = Array(nodes.length).fill(false);
+
+		// edgesCopy.forEach((edge) => console.log(edge.weight));
+		const [allPath, minSpan] = kruscal(nodes, edgesCopy);
+
+		for (const edge of minSpan) {
+			minSpanPath.push(
+				{ stepType: 'node', state: 'visited', nodeIndex: edge.from },
+				{
+					stepType: 'edge',
+					state: 'visited',
+					edgeIndexes: [edge.from, edge.to],
+				},
+				{ stepType: 'node', state: 'visited', nodeIndex: edge.to }
+			);
+		}
+
+		await drawStepsPath(
+			allPath,
+			visited,
+			deadEnds,
+			setViewVisited,
+			setViewDead,
+			edges,
+			setEdges,
+			additionalNums,
+			setAdditionalNums,
+			algorithmSpeed
+		);
+
+		edgesCopy.forEach((edge) => (edge.state = ''));
+		setEdges([...edgesCopy]);
+
+		await drawStepsPath(
+			minSpanPath,
+			visited,
+			deadEnds,
+			setViewVisited,
+			setViewDead,
+			edges,
+			setEdges,
+			additionalNums,
+			setAdditionalNums,
+			0
+		);
 	}
 
 	useEffect(() => {
@@ -478,6 +532,11 @@ function Toolbar({
 									text: 'Dijkstra',
 									func: () => onDijkstra(),
 									tooltip: 'Dijkstra',
+								},
+								{
+									text: 'Kruskal',
+									func: async () => await onKruskal(),
+									tooltip: 'Kruskal Minimum Spanning Tree',
 								},
 							]}
 						/>
