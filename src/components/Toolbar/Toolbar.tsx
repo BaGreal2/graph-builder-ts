@@ -8,6 +8,7 @@ import {
 } from 'react';
 import { eulerianPath, findBridges, topSort } from '../../algorithms';
 import kruscal from '../../algorithms/kruscal';
+import prims from '../../algorithms/prims';
 import {
 	AlgorithmIcon,
 	ArrowDownIcon,
@@ -20,7 +21,7 @@ import {
 	PointerIcon,
 	TrashIcon,
 } from '../../assets/icons';
-import { drawStepsPath, generateEdges, goByPath } from '../../helpers';
+import { drawStepsPath, generateEdges } from '../../helpers';
 import {
 	AlgorithmValues,
 	IColor,
@@ -437,6 +438,25 @@ function Toolbar({
 		);
 	}
 
+	async function onPrims() {
+		const minSpanPath = prims([...nodes], [...edges], nodes[0]);
+		const visited = Array(nodes.length).fill(false);
+		const deadEnds = Array(nodes.length).fill(false);
+		console.log(minSpanPath);
+		await drawStepsPath(
+			minSpanPath,
+			visited,
+			deadEnds,
+			setViewVisited,
+			setViewDead,
+			edges,
+			setEdges,
+			additionalNums,
+			setAdditionalNums,
+			algorithmSpeed
+		);
+	}
+
 	useEffect(() => {
 		window.addEventListener('keydown', keyPressHandler);
 
@@ -537,6 +557,11 @@ function Toolbar({
 									text: 'Kruskal',
 									func: async () => await onKruskal(),
 									tooltip: 'Kruskal Minimum Spanning Tree',
+								},
+								{
+									text: 'Prims',
+									func: async () => await onPrims(),
+									tooltip: 'Prims Minimum Spanning Tree',
 								},
 							]}
 						/>

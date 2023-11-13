@@ -15,6 +15,7 @@ export default async function drawStepsPath(
 	speed: number
 ) {
 	for (const step of path) {
+		console.log(step);
 		const state = step.state;
 
 		switch (step.stepType) {

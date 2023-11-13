@@ -20,7 +20,6 @@ export default function kruscal(
 			edgeIndexes: [edge.to, edge.from],
 			oneDirection: true,
 		});
-		// console.log('painting visited only: ', edge.from, '->', edge.to);
 
 		if (disjointSet.union(edge.from - 1, edge.to - 1)) {
 			path.push({
@@ -28,7 +27,7 @@ export default function kruscal(
 				state: 'visited',
 				edgeIndexes: [edge.from, edge.to],
 			});
-			// console.log('painting dead both: ', edge.from, '->', edge.to);
+
 			const reverseEdge: IEdge = {
 				...edge,
 				from: edge.to,
