@@ -28,9 +28,9 @@ To get started with Graph Builder, follow these steps:
    ```
 2. Install dependencies:
    ```bash
-   npm isntall
+   yarn isntall
    ```
 3. Run the app:
    ```bash
-   npm start
+   yarn preview
    ```
